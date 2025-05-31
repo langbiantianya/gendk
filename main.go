@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -26,7 +27,7 @@ func main() {
 	// JDK版本单选（新增标题）
 	javaVersionRadio := widget.NewRadioGroup([]string{"JDK 1.8", "JDK 17"}, func(s string) {})
 	javaVersionRadio.Horizontal = true
-	javaVersionRadio.SetSelected("java1.8")
+	javaVersionRadio.SetSelected("JDK 1.8")
 	javaVersionContainer := container.NewVBox(
 		widget.NewLabel("JDK版本："), // 新增标题
 		javaVersionRadio,
@@ -70,7 +71,10 @@ func main() {
 		buildTool := buildToolRadio.Selected
 		rojectType := projectTypeSelect.Selected
 		selectedLibs := libSelectCheckGroup.Selected
-
+		if projectName == "" {
+			dialog.ShowInformation("提示", "请输入项目名", w)
+			return
+		}
 		log.Default().Println("项目名:", projectName)
 		log.Default().Println("Java版本:", javaVersion)
 		log.Default().Println("构建工具:", buildTool)
