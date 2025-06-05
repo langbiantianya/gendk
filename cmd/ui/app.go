@@ -1,18 +1,19 @@
 package ui
 
 import (
-	"log"
+	"gendk/cmd/template"
 	"strings" // 新增：用于拼接选中项字符串
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
 
 func App() {
-	a := app.New()
+	a := app.NewWithID("com.lbty.gendk") 
 	w := a.NewWindow("模板生成工具")
 	w.Resize(fyne.NewSize(400, 300))
 
@@ -23,9 +24,16 @@ func App() {
 		widget.NewLabel("项目名称："), // 新增标题
 		projectNameEntry,
 	)
+	// 模块名称输入框（新增标题）
+	moduleNameEntry := widget.NewEntry()
+	moduleNameEntry.SetPlaceHolder("请输入模块名")
+	moduleNameContainer := container.NewVBox(
+		widget.NewLabel("模块名称："), // 新增标题
+		moduleNameEntry,
+	)
 
-	// JDK版本单选（新增标题）
-	javaVersionRadio := widget.NewRadioGroup([]string{"JDK 1.8", "JDK 17"}, func(s string) {})
+	// JDK版本单选（新增标题） "JDK 17"
+	javaVersionRadio := widget.NewRadioGroup([]string{"JDK 1.8"}, func(s string) {})
 	javaVersionRadio.Horizontal = true
 	javaVersionRadio.SetSelected("JDK 1.8")
 	javaVersionContainer := container.NewVBox(
@@ -76,24 +84,85 @@ func App() {
 	// 导出按钮保持不变
 	exportButton := widget.NewButton("导出", func() {
 		projectName := projectNameEntry.Text
+		moduleName := moduleNameEntry.Text
 		javaVersion := javaVersionRadio.Selected
-		buildTool := buildToolRadio.Selected
-		rojectType := projectTypeSelect.Selected
+		// buildTool := buildToolRadio.Selected
+		// rojectType := projectTypeSelect.Selected
 		selectedLibs := libSelectCheckGroup.Selected
 		if projectName == "" {
 			dialog.ShowInformation("提示", "请输入项目名", w)
 			return
 		}
-		log.Default().Println("项目名:", projectName)
-		log.Default().Println("Java版本:", javaVersion)
-		log.Default().Println("构建工具:", buildTool)
-		log.Default().Println("项目类型:", rojectType)
-		log.Default().Println("选中功能:", selectedLibs)
+
+		var data template.WebTemplateData
+		switch javaVersion {
+		case "JDK 1.8":
+			libStr := ""
+			for _, v := range selectedLibs {
+				libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
+			}
+
+			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, "VERSION_1_8")
+			// application, _ := data.GenApplication()
+			// blueprint, _ := data.GenBlueprint()
+			// buildKts, _ := data.GenBuildKts()
+			// runSh, _ := data.GenRunSh()
+			// startWebSh, _ := data.GenStartWebSh()
+			// settingsKts, _ := data.GenSettingsKts()
+			// log.Default().Println("application:", application)
+			// log.Default().Println("blueprint:", blueprint)
+			// log.Default().Println("buildKts:", buildKts)
+			// log.Default().Println("runSh:", runSh)
+			// log.Default().Println("startWebSh:", startWebSh)
+			// log.Default().Println("settingsKts:", settingsKts)
+		case "JDK 17":
+			// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
+			// 处理 JDK 17 相关逻辑
+		default:
+			// 处理其他情况
+			// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
+
+		}
+		if data != (template.WebTemplateData{}) {
+			zipData, err := data.GenZip() // 获取生成的zip字节流
+			if err != nil {
+				dialog.ShowError(err, w) // 显示生成错误
+				return
+			}
+			dlg := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
+				if err != nil {
+					dialog.ShowError(err, w)
+					return
+				}
+				if writer == nil {
+					return // 用户取消保存
+				}
+				defer writer.Close() 
+				// 写入zip数据到目标文件
+				_, writeErr := writer.Write(zipData)
+				if writeErr != nil {
+					dialog.ShowError(writeErr, w)
+					return
+				}
+				dialog.ShowInformation("成功", "项目模板已保存为zip文件", w)
+			}, w)
+			// 设置默认文件名和文件过滤（仅显示zip）
+			dlg.SetFileName(projectName + ".zip")
+			dlg.SetFilter(storage.NewExtensionFileFilter([]string{".zip"}))
+			dlg.Show()
+		}
+
+		// log.Default().Println("项目名:", projectName)
+		// log.Default().Println("Java版本:", javaVersion)
+		// log.Default().Println("构建工具:", buildTool)
+		// log.Default().Println("项目类型:", rojectType)
+		// log.Default().Println("选中功能:", selectedLibs)
 	})
 
 	// 调整主布局为各容器的垂直排列
 	content := container.NewVBox(
 		projectNameContainer,
+		moduleNameContainer,
 		javaVersionContainer,
 		buildToolContainer,
 		projectTypeContainer,

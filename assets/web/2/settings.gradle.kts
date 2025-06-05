@@ -1,4 +1,4 @@
-rootProject.name = "{{.ProjectName}}"
+rootProject.name = "{{.ModuleName}}"
 
 val urlMaps = mapOf(
     "https://repo.maven.apache.org/maven2" to "https://maven.aliyun.com/repository/public",

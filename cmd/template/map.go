@@ -4,7 +4,25 @@ type WebTemplateData struct {
 	SpringBootVersion int
 	Libs              string
 	ProjectName       string
+	ModuleName        string
 	JdkVersion        string
+}
+
+func NewWebTemplateData(
+	SpringBootVersion int,
+	Libs string,
+	ProjectName string,
+	ModuleName string,
+	JdkVersion string) WebTemplateData {
+
+	return WebTemplateData{
+		SpringBootVersion: SpringBootVersion,
+		Libs:              Libs,
+		ProjectName:       ProjectName,
+		ModuleName:        ModuleName,
+		JdkVersion:        JdkVersion,
+	}
+
 }
 
 var LibsMapJDK8 = map[string]string{

@@ -1,7 +1,7 @@
 #!/bin/sh
 WEB_JVM_MEMORY=512
 SPRING_OPTIONS="--spring.profiles.active=prod"
-JAVA_OPTIONS="-Dservice"
+JAVA_OPTIONS="-D{{.ModuleName}}_server"
 LOG_FILE_NAME="service.log"
 
 

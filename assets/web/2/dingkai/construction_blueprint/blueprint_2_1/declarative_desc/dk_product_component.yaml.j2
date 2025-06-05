@@ -7,10 +7,10 @@ spec:
   version: 1.0
   # 产品组件包括的所有模块
   dk_modules:
-    {{.ProjectName}}:
+    {{.ModuleName}}:
       simple_module: False  # 表示定开模块，否则是定开精简制品
       dk_roles: # 依次列出所有角色的声明信息，支持多个角色
-        {{.ProjectName}}: # 第一个角色名
+        {{.ModuleName}}: # 第一个角色名
           strategy:
             resources:
               # 平台资源引用申请，申请了的资源才有访问权限
@@ -25,14 +25,14 @@ spec:
                   limit: "512Mi"
                   request: "256Mi"
               # 直接指定部署的机器 fqdn
-              assign_to: {{hosts}}
+              assign_to: {{"{{hosts}}"}}
               # 是否自动恢复
               repairable: true
               # 探活相关配置
               liveness_probe:
                 method:
                   port:
-                    process_keyword: '{{.ProjectName}}'  # 进程关键字
+                    process_keyword: '{{.ModuleName}}_server'  # 进程关键字
                     port: 9783
                 period: 60 # 探活间隔
                 retry_interval: 0
@@ -40,7 +40,7 @@ spec:
                 retry_times: 3
               # 启动相关配置
               start:
-                cmd: 'sh ${DINGKAI_BASE}/program/{{.ProjectName}}/{{.ProjectName}}/bin/run.sh'
+                cmd: 'sh ${DINGKAI_BASE}/program/{{.ProjectName}}/{{.ModuleName}}/bin/run.sh'
                 retry_interval: 0
                 retry_times: 3
                 timeout: 60
