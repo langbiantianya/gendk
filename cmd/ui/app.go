@@ -2,7 +2,6 @@ package ui
 
 import (
 	"gendk/cmd/template"
-	"strings" // 新增：用于拼接选中项字符串
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -13,20 +12,20 @@ import (
 )
 
 func App() {
-	a := app.NewWithID("com.lbty.gendk") 
+	a := app.NewWithID("com.lbty.gendk")
 	w := a.NewWindow("模板生成工具")
-	w.Resize(fyne.NewSize(400, 300))
+	w.Resize(fyne.NewSize(400, 700))
 
 	// 项目名称输入框（新增标题）
 	projectNameEntry := widget.NewEntry()
-	projectNameEntry.SetPlaceHolder("请输入项目名")
+	projectNameEntry.SetPlaceHolder("请输入项目名 dk_demo")
 	projectNameContainer := container.NewVBox(
 		widget.NewLabel("项目名称："), // 新增标题
 		projectNameEntry,
 	)
 	// 模块名称输入框（新增标题）
 	moduleNameEntry := widget.NewEntry()
-	moduleNameEntry.SetPlaceHolder("请输入模块名")
+	moduleNameEntry.SetPlaceHolder("请输入模块名 demo")
 	moduleNameContainer := container.NewVBox(
 		widget.NewLabel("模块名称："), // 新增标题
 		moduleNameEntry,
@@ -58,7 +57,7 @@ func App() {
 	)
 
 	// 功能多选部分（新增标题）
-	libSelectBadge := widget.NewLabel("已选：无")
+	// libSelectBadge := widget.NewLabel("已选：无")
 	libSelectCheckGroup := widget.NewCheckGroup([]string{
 		"Hutool All",
 		"OkHttp",
@@ -69,15 +68,15 @@ func App() {
 		"Microsoft JDBC Driver For SQL Server",
 		"PostgreSQL JDBC Driver",
 	}, func(selected []string) {
-		if len(selected) == 0 {
-			libSelectBadge.SetText("已选：无")
-		} else {
-			libSelectBadge.SetText("已选：" + strings.Join(selected, "、"))
-		}
+		// if len(selected) == 0 {
+		// 	libSelectBadge.SetText("已选：无")
+		// } else {
+		// 	libSelectBadge.SetText("已选：" + strings.Join(selected, "、"))
+		// }
 	})
 	libSelectContainer := container.NewVBox(
 		widget.NewLabel("额外依赖："), // 新增标题
-		libSelectBadge,
+		// libSelectBadge,
 		libSelectCheckGroup,
 	)
 
@@ -91,6 +90,10 @@ func App() {
 		selectedLibs := libSelectCheckGroup.Selected
 		if projectName == "" {
 			dialog.ShowInformation("提示", "请输入项目名", w)
+			return
+		}		
+		if moduleName == "" {
+			dialog.ShowInformation("提示", "请输入模块名", w)
 			return
 		}
 
@@ -137,7 +140,7 @@ func App() {
 				if writer == nil {
 					return // 用户取消保存
 				}
-				defer writer.Close() 
+				defer writer.Close()
 				// 写入zip数据到目标文件
 				_, writeErr := writer.Write(zipData)
 				if writeErr != nil {
@@ -160,14 +163,19 @@ func App() {
 	})
 
 	// 调整主布局为各容器的垂直排列
-	content := container.NewVBox(
-		projectNameContainer,
-		moduleNameContainer,
-		javaVersionContainer,
-		buildToolContainer,
-		projectTypeContainer,
-		libSelectContainer,
-		exportButton,
+	container.NewVBox(
+		
+	)
+	content := container.NewScroll(
+		container.NewVBox(
+			projectNameContainer,
+			moduleNameContainer,
+			javaVersionContainer,
+			buildToolContainer,
+			projectTypeContainer,
+			libSelectContainer,
+			exportButton,
+		),
 	)
 
 	w.SetContent(content)
