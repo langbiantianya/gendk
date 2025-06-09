@@ -22,5 +22,5 @@
 go.work
 
 fyne-cross/
-
+wasm/
 fyne_metadata_init.go

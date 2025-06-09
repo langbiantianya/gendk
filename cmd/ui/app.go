@@ -7,27 +7,29 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 )
 
 func App() {
 	a := app.NewWithID("com.lbty.gendk")
+	// 加载自定义字体（新增）
+	// 假设已将中文字体文件（如 simhei.ttf）放入 assets/fonts 目录
+
 	w := a.NewWindow("模板生成工具")
 	w.Resize(fyne.NewSize(400, 700))
 
 	// 项目名称输入框（新增标题）
 	projectNameEntry := widget.NewEntry()
-	projectNameEntry.SetPlaceHolder("请输入项目名 dk_demo")
+	projectNameEntry.SetPlaceHolder("Please enter the project name: dk_demo")
 	projectNameContainer := container.NewVBox(
-		widget.NewLabel("项目名称："), // 新增标题
+		widget.NewLabel("Project Name:"), // 新增标题
 		projectNameEntry,
 	)
 	// 模块名称输入框（新增标题）
 	moduleNameEntry := widget.NewEntry()
-	moduleNameEntry.SetPlaceHolder("请输入模块名 demo")
+	moduleNameEntry.SetPlaceHolder("Please enter the module name: demo")
 	moduleNameContainer := container.NewVBox(
-		widget.NewLabel("模块名称："), // 新增标题
+		widget.NewLabel("Module Name:"), // 新增标题
 		moduleNameEntry,
 	)
 
@@ -36,7 +38,7 @@ func App() {
 	javaVersionRadio.Horizontal = true
 	javaVersionRadio.SetSelected("JDK 1.8")
 	javaVersionContainer := container.NewVBox(
-		widget.NewLabel("JDK版本："), // 新增标题
+		widget.NewLabel("JDK version:"), // 新增标题
 		javaVersionRadio,
 	)
 
@@ -44,15 +46,15 @@ func App() {
 	buildToolRadio := widget.NewSelect([]string{"gradle"}, func(s string) {})
 	buildToolRadio.SetSelected("gradle")
 	buildToolContainer := container.NewVBox(
-		widget.NewLabel("构建工具："), // 新增标题
+		widget.NewLabel("Building tools:"), // 新增标题
 		buildToolRadio,
 	)
 
 	// 项目类型选择（新增标题）
-	projectTypeSelect := widget.NewSelect([]string{"web 服务"}, func(s string) {})
-	projectTypeSelect.SetSelected("web 服务")
+	projectTypeSelect := widget.NewSelect([]string{"Web Services"}, func(s string) {})
+	projectTypeSelect.SetSelected("Web Services")
 	projectTypeContainer := container.NewVBox(
-		widget.NewLabel("项目类型："), // 新增标题
+		widget.NewLabel("Project type:"), // 新增标题
 		projectTypeSelect,
 	)
 
@@ -75,13 +77,13 @@ func App() {
 		// }
 	})
 	libSelectContainer := container.NewVBox(
-		widget.NewLabel("额外依赖："), // 新增标题
+		widget.NewLabel("Additional dependencies:"), // 新增标题
 		// libSelectBadge,
 		libSelectCheckGroup,
 	)
 
 	// 导出按钮保持不变
-	exportButton := widget.NewButton("导出", func() {
+	exportButton := widget.NewButton("export", func() {
 		projectName := projectNameEntry.Text
 		moduleName := moduleNameEntry.Text
 		javaVersion := javaVersionRadio.Selected
@@ -89,11 +91,11 @@ func App() {
 		// rojectType := projectTypeSelect.Selected
 		selectedLibs := libSelectCheckGroup.Selected
 		if projectName == "" {
-			dialog.ShowInformation("提示", "请输入项目名", w)
+			dialog.ShowInformation("Tips", "Please enter the project name", w)
 			return
-		}		
+		}
 		if moduleName == "" {
-			dialog.ShowInformation("提示", "请输入模块名", w)
+			dialog.ShowInformation("Tips", "Please enter the module name", w)
 			return
 		}
 
@@ -106,18 +108,6 @@ func App() {
 			}
 
 			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, "VERSION_1_8")
-			// application, _ := data.GenApplication()
-			// blueprint, _ := data.GenBlueprint()
-			// buildKts, _ := data.GenBuildKts()
-			// runSh, _ := data.GenRunSh()
-			// startWebSh, _ := data.GenStartWebSh()
-			// settingsKts, _ := data.GenSettingsKts()
-			// log.Default().Println("application:", application)
-			// log.Default().Println("blueprint:", blueprint)
-			// log.Default().Println("buildKts:", buildKts)
-			// log.Default().Println("runSh:", runSh)
-			// log.Default().Println("startWebSh:", startWebSh)
-			// log.Default().Println("settingsKts:", settingsKts)
 		case "JDK 17":
 			// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
 			// 处理 JDK 17 相关逻辑
@@ -132,27 +122,8 @@ func App() {
 				dialog.ShowError(err, w) // 显示生成错误
 				return
 			}
-			dlg := dialog.NewFileSave(func(writer fyne.URIWriteCloser, err error) {
-				if err != nil {
-					dialog.ShowError(err, w)
-					return
-				}
-				if writer == nil {
-					return // 用户取消保存
-				}
-				defer writer.Close()
-				// 写入zip数据到目标文件
-				_, writeErr := writer.Write(zipData)
-				if writeErr != nil {
-					dialog.ShowError(writeErr, w)
-					return
-				}
-				dialog.ShowInformation("成功", "项目模板已保存为zip文件", w)
-			}, w)
-			// 设置默认文件名和文件过滤（仅显示zip）
-			dlg.SetFileName(projectName + ".zip")
-			dlg.SetFilter(storage.NewExtensionFileFilter([]string{".zip"}))
-			dlg.Show()
+			template.SaveZipFile(zipData, projectName+".zip")
+			// 调用JavaScript的下载函数
 		}
 
 		// log.Default().Println("项目名:", projectName)
@@ -163,9 +134,7 @@ func App() {
 	})
 
 	// 调整主布局为各容器的垂直排列
-	container.NewVBox(
-		
-	)
+	container.NewVBox()
 	content := container.NewScroll(
 		container.NewVBox(
 			projectNameContainer,

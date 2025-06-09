@@ -11,5 +11,8 @@ var assets embed.FS // 新增文件系统变量保
 
 func main() {
 	template.SetdistFS(assets)
-	ui.App()
+	for {
+		ui.App()
+	}
+
 }
