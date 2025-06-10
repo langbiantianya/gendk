@@ -1,6 +1,7 @@
 package web
 
 import (
+	"gendk/cmd/template"
 	"gendk/cmd/web/compose"
 	"log"
 	"net/http"
@@ -90,15 +91,63 @@ func (h *home) Render() app.UI {
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
 			OnClick(func(ctx app.Context, e app.Event) {
-				// 这里可以获取所有表单值（示例：打印到控制台）
-				app.Log("表单值：", map[string]interface{}{
-					"projectName": h.projectName,
-					"moduleName":  h.moduleName,
-					"jdkVersion":  h.jdkVersion,
-					"buildTool":   h.buildTool,
-					"projectType": h.projectType,
-					"extraLibs":   h.extraLibs,
-				})
+
+				if h.projectName == "" {
+					app.Window().Call("alert", "提示：请输入项目名") // 添加弹窗提示
+					return
+				}
+				if h.moduleName == "" {
+					app.Window().Call("alert", "提示：请输入模块名") // 添加弹窗提示
+					return
+				}
+
+				var data template.WebTemplateData
+				switch h.jdkVersion {
+				case "JDK 1.8":
+					libStr := ""
+					for _, v := range h.extraLibs {
+						libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
+					}
+
+					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
+					// application, _ := data.GenApplication()
+					// blueprint, _ := data.GenBlueprint()
+					// buildKts, _ := data.GenBuildKts()
+					// runSh, _ := data.GenRunSh()
+					// startWebSh, _ := data.GenStartWebSh()
+					// settingsKts, _ := data.GenSettingsKts()
+					// log.Default().Println("application:", application)
+					// log.Default().Println("blueprint:", blueprint)
+					// log.Default().Println("buildKts:", buildKts)
+					// log.Default().Println("runSh:", runSh)
+					// log.Default().Println("startWebSh:", startWebSh)
+					// log.Default().Println("settingsKts:", settingsKts)
+				case "JDK 17":
+					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
+					// 处理 JDK 17 相关逻辑
+				default:
+					// 处理其他情况
+					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
+
+				}
+				if data != (template.WebTemplateData{}) {
+					zipData, err := data.GenZip() // 获取生成的zip字节流
+					if err != nil {
+						app.Window().Call("alert", err)
+						return
+					}
+					template.SaveZipFile(zipData, h.projectName+".zip")
+				}
+
+				// // 这里可以获取所有表单值（示例：打印到控制台）
+				// app.Log("表单值：", map[string]interface{}{
+				// 	"projectName": h.projectName,
+				// 	"moduleName":  h.moduleName,
+				// 	"jdkVersion":  h.jdkVersion,
+				// 	"buildTool":   h.buildTool,
+				// 	"projectType": h.projectType,
+				// 	"extraLibs":   h.extraLibs,
+				// })
 			}),
 	)
 }
