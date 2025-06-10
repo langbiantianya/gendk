@@ -71,15 +71,15 @@ func (h *home) Render() app.UI {
 		// 额外依赖多选（绑定extraLibs）
 		compose.CheckboxGroup(
 			"额外依赖",
-			map[string]string{
-				"Hutool All":                           "Hutool All",
-				"OkHttp":                               "OkHttp",
-				"Spring Boot Starter JDBC":             "Spring Boot Starter JDBC",
-				"Spring Boot Starter Data JPA":         "Spring Boot Starter Data JPA",
-				"MyBatis Plus":                         "MyBatis Plus",
-				"MySQL Connector/J":                    "MySQL Connector/J",
-				"Microsoft JDBC Driver For SQL Server": "Microsoft JDBC Driver For SQL Server",
-				"PostgreSQL JDBC Driver":               "PostgreSQL JDBC Driver",
+			[]string{
+				"Hutool All",
+				"OkHttp",
+				"Spring Boot Starter JDBC",
+				"Spring Boot Starter Data JPA",
+				"MyBatis Plus",
+				"MySQL Connector/J",
+				"Microsoft JDBC Driver For SQL Server",
+				"PostgreSQL JDBC Driver",
 			},
 			[]string{},
 			func(v []string) {
