@@ -10,7 +10,7 @@ import (
 // required: 是否必选
 // placeholder: 占位提示
 // onChange: 值变化时的回调（参数为新值）
-func Select(options map[string]string, value string, required bool, placeholder string, onChange func(string)) app.UI {
+func Select(options []string, value string, required bool, placeholder string, onChange func(string)) app.UI {
 	var optionsSlice []app.UI
 
 	// 占位符
@@ -21,9 +21,9 @@ func Select(options map[string]string, value string, required bool, placeholder 
 	}
 
 	// 选项
-	for val, label := range options {
+	for _, val := range options {
 		optionsSlice = append(optionsSlice,
-			app.Option().Value(val).Text(label).Selected(val == value),
+			app.Option().Value(val).Text(val).Selected(val == value),
 		)
 	}
 

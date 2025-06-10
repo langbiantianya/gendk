@@ -23,6 +23,11 @@ type home struct {
 }
 
 func (h *home) Render() app.UI {
+	h.jdkVersion = "JDK 1.8"
+	h.buildTool = "Gradle"
+	h.projectType = "Web"
+	h.extraLibs = []string{}
+
 	return app.Div().Class(
 		"max-w-md", "mx-auto", "p-6", "bg-white", "rounded-lg", "shadow-md", "flex", "flex-col", "gap-y-4",
 	).Body(
@@ -38,19 +43,20 @@ func (h *home) Render() app.UI {
 
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
-			map[string]string{"JDK 1.8": "JDK 1.8"},
-			"JDK 1.8",
+			[]string{"JDK 1.8"},
+			h.jdkVersion,
 			true,
 			"请选择JDK版本",
 			func(v string) {
+				app.Log(v)
 				h.jdkVersion = v
 			},
 		),
 
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
-			map[string]string{"Gradle": "Gradle"},
-			"Gradle",
+			[]string{"Gradle"},
+			h.buildTool,
 			true,
 			"请选择构建工具",
 			func(v string) {
@@ -60,8 +66,8 @@ func (h *home) Render() app.UI {
 
 		// 项目类型选择（绑定projectType）
 		compose.Select(
-			map[string]string{"Web": "Web"},
-			"Web",
+			[]string{"Web"},
+			h.projectType,
 			true,
 			"请选择项目类型",
 			func(v string) {
@@ -82,7 +88,7 @@ func (h *home) Render() app.UI {
 				"Microsoft JDBC Driver For SQL Server",
 				"PostgreSQL JDBC Driver",
 			},
-			[]string{},
+			h.extraLibs,
 			func(v []string) {
 				h.extraLibs = v
 			},
@@ -91,7 +97,6 @@ func (h *home) Render() app.UI {
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
 			OnClick(func(ctx app.Context, e app.Event) {
-
 				if h.projectName == "" {
 					app.Window().Call("alert", "提示：请输入项目名") // 添加弹窗提示
 					return
@@ -104,50 +109,43 @@ func (h *home) Render() app.UI {
 				var data template.WebTemplateData
 				switch h.jdkVersion {
 				case "JDK 1.8":
+					app.Log("JDK 1.8")
 					libStr := ""
 					for _, v := range h.extraLibs {
 						libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
 					}
 
 					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
-					// application, _ := data.GenApplication()
-					// blueprint, _ := data.GenBlueprint()
-					// buildKts, _ := data.GenBuildKts()
-					// runSh, _ := data.GenRunSh()
-					// startWebSh, _ := data.GenStartWebSh()
-					// settingsKts, _ := data.GenSettingsKts()
-					// log.Default().Println("application:", application)
-					// log.Default().Println("blueprint:", blueprint)
-					// log.Default().Println("buildKts:", buildKts)
-					// log.Default().Println("runSh:", runSh)
-					// log.Default().Println("startWebSh:", startWebSh)
-					// log.Default().Println("settingsKts:", settingsKts)
 				case "JDK 17":
+					app.Log("JDK 17")
+
 					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
 					// 处理 JDK 17 相关逻辑
 				default:
+					app.Log("其他版本")
 					// 处理其他情况
 					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
 
 				}
+
 				if data != (template.WebTemplateData{}) {
 					zipData, err := data.GenZip() // 获取生成的zip字节流
 					if err != nil {
 						app.Window().Call("alert", err)
 						return
 					}
-					template.SaveZipFile(zipData, h.projectName+".zip")
+					template.SaveZipDataLocally(ctx, e, zipData, h.projectName+".zip")
 				}
 
 				// // 这里可以获取所有表单值（示例：打印到控制台）
-				// app.Log("表单值：", map[string]interface{}{
-				// 	"projectName": h.projectName,
-				// 	"moduleName":  h.moduleName,
-				// 	"jdkVersion":  h.jdkVersion,
-				// 	"buildTool":   h.buildTool,
-				// 	"projectType": h.projectType,
-				// 	"extraLibs":   h.extraLibs,
-				// })
+				app.Log("表单值：", map[string]interface{}{
+					"projectName": h.projectName,
+					"moduleName":  h.moduleName,
+					"jdkVersion":  h.jdkVersion,
+					"buildTool":   h.buildTool,
+					"projectType": h.projectType,
+					"extraLibs":   h.extraLibs,
+				})
 			}),
 	)
 }
