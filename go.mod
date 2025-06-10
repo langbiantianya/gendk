@@ -2,7 +2,10 @@ module gendk
 
 go 1.23.5
 
-require fyne.io/fyne/v2 v2.6.1
+require (
+	fyne.io/fyne/v2 v2.6.1
+	github.com/maxence-charriere/go-app/v10 v10.1.3
+)
 
 require (
 	fyne.io/systray v1.11.0 // indirect
@@ -19,6 +22,7 @@ require (
 	github.com/go-text/render v0.2.0 // indirect
 	github.com/go-text/typesetting v0.2.1 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/hack-pad/go-indexeddb v0.3.2 // indirect
 	github.com/hack-pad/safejs v0.1.0 // indirect
 	github.com/jeandeaual/go-locale v0.0.0-20241217141322-fcc2cadd6f08 // indirect

@@ -13,5 +13,19 @@ android:
 freebsd:
 	fyne-cross freebsd -arch=* -app-id com.lbty.gendk -name gendk
 
-web:
-	fyne-cross web
+web_build:
+	GOARCH=wasm GOOS=js go build -o web/app.wasm
+	go build
+
+web_build_windows:
+	$$env:GOARCH = "wasm"
+	$$env:GOOS = "js"
+	go build -o web/app.wasm
+	go build
+
+web:web_build
+	./gendk
+
+web_windows:web_build_windows
+	./gendk
+
