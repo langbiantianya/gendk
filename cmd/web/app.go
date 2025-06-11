@@ -16,9 +16,10 @@ type home struct {
 	app.Compo
 
 	// 表单状态（用于存储各个组件的值）
-	projectName       string   // 项目名称
-	moduleName        string   // 模块名称
-	jdkVersion        string   // JDK版本
+	projectName       string // 项目名称
+	moduleName        string // 模块名称
+	jdkVersion        string // JDK版本
+	selectSpringBoot  bool
 	springBootVersion int      // Spring Boot版本（JDK 17时可选）
 	buildTool         string   // 构建工具
 	projectType       string   // 项目类型
@@ -73,27 +74,29 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				app.Log(v)
 				h.jdkVersion = v
-				h.Render()
+				h.selectSpringBoot = h.jdkVersion != "JDK 1.8"
 			},
 		),
 		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
-		compose.Select(
-			[]string{"Spring Boot 2", "Spring Boot 3"},
-			func() string {
-				return fmt.Sprintf("Spring Boot %d", h.springBootVersion)
-			}(),
-			true,
-			"Spring Boot版本",
-			func(v string) {
-				app.Log(v)
-				switch v {
-				case "Spring Boot 2":
-					h.springBootVersion = 2
-				case "Spring Boot 3":
-					h.springBootVersion = 3
-				}
-			},
-		),
+		app.If(h.selectSpringBoot, func() app.UI {
+			return compose.Select(
+				[]string{"Spring Boot 2", "Spring Boot 3"},
+				func() string {
+					return fmt.Sprintf("Spring Boot %d", h.springBootVersion)
+				}(),
+				true,
+				"Spring Boot版本",
+				func(v string) {
+					app.Log(v)
+					switch v {
+					case "Spring Boot 2":
+						h.springBootVersion = 2
+					case "Spring Boot 3":
+						h.springBootVersion = 3
+					}
+				},
+			)
+		}),
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
 			[]string{"Gradle"},
