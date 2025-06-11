@@ -15,5 +15,5 @@ FROM docker.1ms.run/nginx:stable-alpine
 COPY  --from=builder /app/*.html /usr/share/nginx/html
 COPY  --from=builder /app/*.js /usr/share/nginx/html
 COPY  --from=builder /app/manifest.webmanifest /usr/share/nginx/html
-COPY  --from=builder /app/web /usr/share/nginx/html/web
+COPY  --from=builder /app/web/ /usr/share/nginx/html/web
 EXPOSE 80
