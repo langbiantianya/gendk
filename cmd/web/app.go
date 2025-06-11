@@ -4,6 +4,8 @@ import (
 	"gendk/cmd/template"
 	"gendk/cmd/web/compose"
 	"log"
+	"net/http"
+	"os"
 
 	"github.com/maxence-charriere/go-app/v10/pkg/app"
 )
@@ -171,23 +173,25 @@ func (h *home) Render() app.UI {
 func App() {
 	app.Route("/", func() app.Composer { return &home{} })
 	app.RunWhenOnBrowser()
+	build := os.Getenv("BUILD")
+	if build == "" {
+		http.Handle("/", &app.Handler{
+			Name:        "模板生成工具",
+			Description: "快速生成定开项目",
+			Scripts:     []string{"https://cdn.tailwindcss.com"},
+		})
+		if err := http.ListenAndServe(":8000", nil); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		err := app.GenerateStaticWebsite(".", &app.Handler{
+			Name:        "模板生成工具",
+			Description: "快速生成定开项目",
+			Scripts:     []string{"https://cdn.tailwindcss.com"},
+		})
 
-	// http.Handle("/", &app.Handler{
-	// 	Name:        "模板生成工具",
-	// 	Description: "快速生成定开项目",
-	// 	Scripts:     []string{"https://cdn.tailwindcss.com"},
-	// })
-	// if err := http.ListenAndServe(":8000", nil); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	err := app.GenerateStaticWebsite(".", &app.Handler{
-		Name:        "模板生成工具",
-		Description: "快速生成定开项目",
-		Scripts:     []string{"https://cdn.tailwindcss.com"},
-	})
-
-	if err != nil {
-		log.Fatal(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

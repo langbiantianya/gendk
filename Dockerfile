@@ -2,6 +2,8 @@ FROM docker.1ms.run/golang:1.24-bookworm AS builder
 
 WORKDIR /app
 
+ENV BUILD=true
+
 COPY   . .
 RUN go env -w GO111MODULE=on &&\
     go env -w GOPROXY=https://goproxy.cn,direct &&\
