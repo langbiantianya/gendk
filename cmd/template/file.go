@@ -158,9 +158,13 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 		}
 
 		if d.IsDir() {
-			// 创建目录条目（zip目录需要以/结尾）
-			_, err := zw.Create(relPath + "/")
-			return err
+			// 跳过根目录的创建（relPath为空时不创建）
+			if relPath != "" {
+				// 创建目录条目（zip目录需要以/结尾）
+				_, err := zw.Create(relPath + "/")
+				return err
+			}
+			return nil
 		}
 		// 判断文件是否需要替换
 		var fileData []byte
