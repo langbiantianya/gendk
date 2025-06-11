@@ -147,7 +147,7 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 		}
 
 		// 计算相对路径（去除assets/web/2前缀）
-		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/web/%d", data.SpringBootVersion))
+		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/web/%d/", data.SpringBootVersion))
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}
