@@ -16,9 +16,30 @@ func SetdistFS(fs embed.FS) {
 	distFS = fs
 }
 
+func (data WebTemplateData) GenReadme() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/README.md", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("readme").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+
+}
+
 func (data WebTemplateData) GenBuildKts() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/build.gradle.kts", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/build.gradle.kts", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -39,7 +60,7 @@ func (data WebTemplateData) GenBuildKts() (string, error) {
 
 func (data WebTemplateData) GenSettingsKts() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/settings.gradle.kts", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/settings.gradle.kts", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -59,7 +80,7 @@ func (data WebTemplateData) GenSettingsKts() (string, error) {
 
 func (data WebTemplateData) GenApplication() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/src/main/resources/application.properties", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/src/main/resources/application.properties", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -79,7 +100,7 @@ func (data WebTemplateData) GenApplication() (string, error) {
 
 func (data WebTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/dingkai/moduleName/bin/run.sh", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/moduleName/bin/run.sh", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -98,7 +119,7 @@ func (data WebTemplateData) GenRunSh() (string, error) {
 }
 func (data WebTemplateData) GenStartWebSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/dingkai/moduleName/bin/start_web.sh", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/moduleName/bin/start_web.sh", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -117,7 +138,7 @@ func (data WebTemplateData) GenStartWebSh() (string, error) {
 }
 func (data WebTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/web/%d/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -140,14 +161,14 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
-	// 遍历assets/web/2目录下所有文件
-	err := fs.WalkDir(distFS, fmt.Sprintf("assets/web/%d", data.SpringBootVersion), func(path string, d fs.DirEntry, walkErr error) error {
+	// 遍历assets/gradle/web/2目录下所有文件
+	err := fs.WalkDir(distFS, fmt.Sprintf("assets/gradle/web/%d", data.SpringBootVersion), func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
-		// 计算相对路径（去除assets/web/2前缀）
-		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/web/%d/", data.SpringBootVersion))
+		// 计算相对路径（去除assets/gradle/web/2前缀）
+		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/gradle/web/%d/", data.SpringBootVersion))
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}
@@ -200,6 +221,12 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 			fileData = []byte(strData)
 		} else if strings.Contains(relPath, "dk_product_component.yaml.j2") {
 			strData, err := data.GenBlueprint()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "README.md") {
+			strData, err := data.GenReadme()
 			if err != nil {
 				return err
 			}
