@@ -30,6 +30,25 @@ func (h *home) Render() app.UI {
 	return app.Div().Class(
 		"max-w-md", "mx-auto", "p-6", "bg-white", "rounded-lg", "shadow-md", "flex", "flex-col", "gap-y-4",
 	).Body(
+		app.H1().Class(
+			"text-2xl", "font-bold", "text-gray-800", "text-center", // 添加 text-center 类
+		).Text("定开项目生成器"),
+
+		compose.Button("下载本机程序", "secondary").OnClick(func(ctx app.Context, e app.Event) {
+			// 跳转链接到 https://github.com/langbiantianya/gendk/releases
+			ctx.Defer(func(ctx app.Context) {
+				// 创建下载链接
+				a := app.Window().Get("document").Call("createElement", "a")
+				a.Set("href", "https://github.com/langbiantianya/gendk/releases")
+				// 添加到DOM并触发点击
+				app.Window().Get("document").Get("body").Call("appendChild", a)
+				a.Call("click")
+				// 移除链接
+				a.Call("remove")
+
+			})
+		}),
+
 		// 项目名称输入框（绑定projectName）
 		compose.Input("项目名称", h.projectName, func(v string) {
 			h.projectName = v
@@ -152,6 +171,15 @@ func (h *home) Render() app.UI {
 func App() {
 	app.Route("/", func() app.Composer { return &home{} })
 	app.RunWhenOnBrowser()
+
+	// http.Handle("/", &app.Handler{
+	// 	Name:        "模板生成工具",
+	// 	Description: "快速生成定开项目",
+	// 	Scripts:     []string{"https://cdn.tailwindcss.com"},
+	// })
+	// if err := http.ListenAndServe(":8000", nil); err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	err := app.GenerateStaticWebsite(".", &app.Handler{
 		Name:        "模板生成工具",
