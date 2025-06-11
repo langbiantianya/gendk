@@ -1,4 +1,4 @@
-FROM golang:1.23-bookworm AS builder
+FROM docker.1ms.run/golang:1.24-bookworm AS builder
 
 WORKDIR /app
 
@@ -11,6 +11,9 @@ RUN go env -w GO111MODULE=on &&\
 	go build &&\
     ./gendk
 
-FROM nginx:stable-alpine
-COPY  --from=builder /app /usr/share/nginx/html
+FROM docker.1ms.run/nginx:stable-alpine
+COPY  --from=builder /app/*.html /usr/share/nginx/html
+COPY  --from=builder /app/*.js /usr/share/nginx/html
+COPY  --from=builder /app/manifest.webmanifest /usr/share/nginx/html
+COPY  --from=builder /app/web /usr/share/nginx/html/web
 EXPOSE 80
