@@ -4,7 +4,6 @@ import (
 	"gendk/cmd/template"
 	"gendk/cmd/web/compose"
 	"log"
-	"net/http"
 
 	"github.com/maxence-charriere/go-app/v10/pkg/app"
 )
@@ -173,22 +172,22 @@ func App() {
 	app.Route("/", func() app.Composer { return &home{} })
 	app.RunWhenOnBrowser()
 
-	http.Handle("/", &app.Handler{
-		Name:        "模板生成工具",
-		Description: "快速生成定开项目",
-		Scripts:     []string{"https://cdn.tailwindcss.com"},
-	})
-	if err := http.ListenAndServe(":8000", nil); err != nil {
-		log.Fatal(err)
-	}
-
-	// err := app.GenerateStaticWebsite(".", &app.Handler{
+	// http.Handle("/", &app.Handler{
 	// 	Name:        "模板生成工具",
 	// 	Description: "快速生成定开项目",
 	// 	Scripts:     []string{"https://cdn.tailwindcss.com"},
 	// })
-
-	// if err != nil {
+	// if err := http.ListenAndServe(":8000", nil); err != nil {
 	// 	log.Fatal(err)
 	// }
+
+	err := app.GenerateStaticWebsite(".", &app.Handler{
+		Name:        "模板生成工具",
+		Description: "快速生成定开项目",
+		Scripts:     []string{"https://cdn.tailwindcss.com"},
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
