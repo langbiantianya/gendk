@@ -20,9 +20,11 @@ type home struct {
 	moduleName           string // 模块名称
 	jdkVersion           string // JDK版本
 	hideSelectSpringBoot bool
-	springBootVersion    int      // Spring Boot版本（JDK 17时可选）
-	buildTool            string   // 构建工具
-	projectType          string   // 项目类型
+	springBootVersion    int    // Spring Boot版本（JDK 17时可选）
+	buildTool            string // 构建工具
+	projectType          string // 项目类型
+	ssoProtocol          string
+	hideSelectSSO        bool
 	extraLibs            []string // 额外依赖
 }
 
@@ -113,11 +115,23 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				h.projectType = v
 				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
+				h.hideSelectSSO = h.projectType != "SSO"
 				if h.hideSelectSpringBoot {
 					h.springBootVersion = 2
 				}
 			},
 		),
+
+		// 单点登入协议类型选择（绑定ssoProtocol）
+		compose.Select(
+			[]string{"SAML"},
+			h.ssoProtocol,
+			true,
+			"请选择单点登入协议类型",
+			func(v string) {
+				h.ssoProtocol = v
+			},
+		).Hidden(h.hideSelectSSO),
 
 		// 额外依赖多选（绑定extraLibs）
 		compose.CheckboxGroup(
@@ -206,6 +220,8 @@ func App() {
 			springBootVersion:    2,
 			buildTool:            "Gradle",
 			projectType:          "Web",
+			ssoProtocol:          "SAML",
+			hideSelectSSO:        true,
 			extraLibs:            []string{},
 		}
 	})
