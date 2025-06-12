@@ -69,7 +69,7 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				app.Log(v)
 				h.jdkVersion = v
-				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8"
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
 				if h.hideSelectSpringBoot {
 					h.springBootVersion = 2
 				}
@@ -106,12 +106,16 @@ func (h *home) Render() app.UI {
 
 		// 项目类型选择（绑定projectType）
 		compose.Select(
-			[]string{"Web"},
+			[]string{"Web", "SSO"},
 			h.projectType,
 			true,
 			"请选择项目类型",
 			func(v string) {
 				h.projectType = v
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
+				if h.hideSelectSpringBoot {
+					h.springBootVersion = 2
+				}
 			},
 		),
 
@@ -152,7 +156,7 @@ func (h *home) Render() app.UI {
 					app.Log("处理 JDK 1.8")
 					libStr := ""
 					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
+						libStr += "    implementation (\"" + template.LibsGradleMapJDK8[v] + "\")\n"
 					}
 
 					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
@@ -161,7 +165,7 @@ func (h *home) Render() app.UI {
 					app.Log("处理 JDK 17")
 					libStr := ""
 					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsMapJDK17[v] + "\")\n"
+						libStr += "    implementation (\"" + template.LibsGradleMapJDK17[v] + "\")\n"
 					}
 					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, "VERSION_17")
 				default:
@@ -172,7 +176,7 @@ func (h *home) Render() app.UI {
 				}
 
 				if data != (template.WebTemplateData{}) {
-					zipData, err := data.GenZip() // 获取生成的zip字节流
+					zipData, err := data.GenWebZip() // 获取生成的zip字节流
 					if err != nil {
 						app.Window().Call("alert", err)
 						return

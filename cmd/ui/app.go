@@ -91,7 +91,7 @@ func App() {
 		if projectName == "" {
 			dialog.ShowInformation("提示", "请输入项目名", w)
 			return
-		}		
+		}
 		if moduleName == "" {
 			dialog.ShowInformation("提示", "请输入模块名", w)
 			return
@@ -102,7 +102,7 @@ func App() {
 		case "JDK 1.8":
 			libStr := ""
 			for _, v := range selectedLibs {
-				libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
+				libStr += "    implementation (\"" + template.LibsGradleMapJDK8[v] + "\")\n"
 			}
 
 			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, "VERSION_1_8")
@@ -127,7 +127,7 @@ func App() {
 
 		}
 		if data != (template.WebTemplateData{}) {
-			zipData, err := data.GenZip() // 获取生成的zip字节流
+			zipData, err := data.GenWebZip() // 获取生成的zip字节流
 			if err != nil {
 				dialog.ShowError(err, w) // 显示生成错误
 				return
@@ -163,9 +163,7 @@ func App() {
 	})
 
 	// 调整主布局为各容器的垂直排列
-	container.NewVBox(
-		
-	)
+	container.NewVBox()
 	content := container.NewScroll(
 		container.NewVBox(
 			projectNameContainer,
