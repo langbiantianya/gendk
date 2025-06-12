@@ -36,11 +36,11 @@ func NewWebTemplateData(
 	}
 
 	return WebTemplateData{
-		SpringBootVersion: SpringBootVersion,
-		Libs:              Libs,
-		ProjectName:       ProjectName,
-		ModuleName:        ModuleName,
-		JdkVersion:        JdkVersion,
+		SpringBootVersion,
+		Libs,
+		ProjectName,
+		ModuleName,
+		JdkVersion,
 	}
 
 }
@@ -185,7 +185,7 @@ func (data WebTemplateData) GenBlueprint() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
-func (data WebTemplateData) GenWebZip() ([]byte, error) {
+func (data WebTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()

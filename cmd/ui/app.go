@@ -127,7 +127,7 @@ func App() {
 
 		}
 		if data != (template.WebTemplateData{}) {
-			zipData, err := data.GenWebZip() // 获取生成的zip字节流
+			zipData, err := data.GenZip() // 获取生成的zip字节流
 			if err != nil {
 				dialog.ShowError(err, w) // 显示生成错误
 				return
