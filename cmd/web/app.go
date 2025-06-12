@@ -1,9 +1,12 @@
 package web
 
 import (
+	"fmt"
 	"gendk/cmd/template"
 	"gendk/cmd/web/compose"
 	"log"
+	"net/http"
+	"os"
 
 	"github.com/maxence-charriere/go-app/v10/pkg/app"
 )
@@ -13,19 +16,17 @@ type home struct {
 	app.Compo
 
 	// 表单状态（用于存储各个组件的值）
-	projectName string   // 项目名称
-	moduleName  string   // 模块名称
-	jdkVersion  string   // JDK版本
-	buildTool   string   // 构建工具
-	projectType string   // 项目类型
-	extraLibs   []string // 额外依赖
+	projectName          string // 项目名称
+	moduleName           string // 模块名称
+	jdkVersion           string // JDK版本
+	hideSelectSpringBoot bool
+	springBootVersion    int      // Spring Boot版本（JDK 17时可选）
+	buildTool            string   // 构建工具
+	projectType          string   // 项目类型
+	extraLibs            []string // 额外依赖
 }
 
 func (h *home) Render() app.UI {
-	h.jdkVersion = "JDK 1.8"
-	h.buildTool = "Gradle"
-	h.projectType = "Web"
-	h.extraLibs = []string{}
 
 	return app.Div().Class(
 		"max-w-md", "mx-auto", "p-6", "bg-white", "rounded-lg", "shadow-md", "flex", "flex-col", "gap-y-4",
@@ -61,16 +62,37 @@ func (h *home) Render() app.UI {
 
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
-			[]string{"JDK 1.8"},
+			[]string{"JDK 1.8", "JDK 17"},
 			h.jdkVersion,
 			true,
 			"请选择JDK版本",
 			func(v string) {
 				app.Log(v)
 				h.jdkVersion = v
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8"
+				if h.hideSelectSpringBoot {
+					h.springBootVersion = 2
+				}
 			},
 		),
-
+		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
+		compose.Select(
+			[]string{"Spring Boot 2", "Spring Boot 3"},
+			func() string {
+				return fmt.Sprintf("Spring Boot %d", h.springBootVersion)
+			}(),
+			true,
+			"Spring Boot版本",
+			func(v string) {
+				app.Log(v)
+				switch v {
+				case "Spring Boot 2":
+					h.springBootVersion = 2
+				case "Spring Boot 3":
+					h.springBootVersion = 3
+				}
+			},
+		).Hidden(h.hideSelectSpringBoot),
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
 			[]string{"Gradle"},
@@ -127,7 +149,7 @@ func (h *home) Render() app.UI {
 				var data template.WebTemplateData
 				switch h.jdkVersion {
 				case "JDK 1.8":
-					app.Log("JDK 1.8")
+					app.Log("处理 JDK 1.8")
 					libStr := ""
 					for _, v := range h.extraLibs {
 						libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
@@ -135,10 +157,13 @@ func (h *home) Render() app.UI {
 
 					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
 				case "JDK 17":
-					app.Log("JDK 17")
-
-					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
 					// 处理 JDK 17 相关逻辑
+					app.Log("处理 JDK 17")
+					libStr := ""
+					for _, v := range h.extraLibs {
+						libStr += "    implementation (\"" + template.LibsMapJDK17[v] + "\")\n"
+					}
+					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, "VERSION_17")
 				default:
 					app.Log("其他版本")
 					// 处理其他情况
@@ -157,37 +182,49 @@ func (h *home) Render() app.UI {
 
 				// // 这里可以获取所有表单值（示例：打印到控制台）
 				app.Log("表单值：", map[string]interface{}{
-					"projectName": h.projectName,
-					"moduleName":  h.moduleName,
-					"jdkVersion":  h.jdkVersion,
-					"buildTool":   h.buildTool,
-					"projectType": h.projectType,
-					"extraLibs":   h.extraLibs,
+					"projectName":       h.projectName,
+					"moduleName":        h.moduleName,
+					"jdkVersion":        h.jdkVersion,
+					"springBootVersion": h.springBootVersion,
+					"buildTool":         h.buildTool,
+					"projectType":       h.projectType,
+					"extraLibs":         h.extraLibs,
 				})
 			}),
 	)
 }
 
 func App() {
-	app.Route("/", func() app.Composer { return &home{} })
-	app.RunWhenOnBrowser()
-
-	// http.Handle("/", &app.Handler{
-	// 	Name:        "模板生成工具",
-	// 	Description: "快速生成定开项目",
-	// 	Scripts:     []string{"https://cdn.tailwindcss.com"},
-	// })
-	// if err := http.ListenAndServe(":8000", nil); err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	err := app.GenerateStaticWebsite(".", &app.Handler{
-		Name:        "模板生成工具",
-		Description: "快速生成定开项目",
-		Scripts:     []string{"https://cdn.tailwindcss.com"},
+	app.Route("/", func() app.Composer {
+		return &home{
+			jdkVersion:           "JDK 1.8",
+			hideSelectSpringBoot: true,
+			springBootVersion:    2,
+			buildTool:            "Gradle",
+			projectType:          "Web",
+			extraLibs:            []string{},
+		}
 	})
+	app.RunWhenOnBrowser()
+	build := os.Getenv("BUILD")
+	if build == "" {
+		http.Handle("/", &app.Handler{
+			Name:        "模板生成工具",
+			Description: "快速生成定开项目",
+			Scripts:     []string{"https://cdn.tailwindcss.com"},
+		})
+		if err := http.ListenAndServe(":8000", nil); err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		err := app.GenerateStaticWebsite(".", &app.Handler{
+			Name:        "模板生成工具",
+			Description: "快速生成定开项目",
+			Scripts:     []string{"https://cdn.tailwindcss.com"},
+		})
 
-	if err != nil {
-		log.Fatal(err)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

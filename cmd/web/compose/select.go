@@ -10,7 +10,7 @@ import (
 // required: 是否必选
 // placeholder: 占位提示
 // onChange: 值变化时的回调（参数为新值）
-func Select(options []string, value string, required bool, placeholder string, onChange func(string)) app.UI {
+func Select(options []string, value string, required bool, placeholder string, onChange func(string)) app.HTMLSelect {
 	var optionsSlice []app.UI
 
 	// 占位符
