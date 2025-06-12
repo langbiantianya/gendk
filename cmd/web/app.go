@@ -164,30 +164,8 @@ func (h *home) Render() app.UI {
 					return
 				}
 
-				var data template.WebTemplateData
-				switch h.jdkVersion {
-				case "JDK 1.8":
-					app.Log("处理 JDK 1.8")
-					libStr := ""
-					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsGradleMapJDK8[v] + "\")\n"
-					}
-
-					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
-				case "JDK 17":
-					// 处理 JDK 17 相关逻辑
-					app.Log("处理 JDK 17")
-					libStr := ""
-					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsGradleMapJDK17[v] + "\")\n"
-					}
-					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, "VERSION_17")
-				default:
-					app.Log("其他版本")
-					// 处理其他情况
-					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
-
-				}
+				libStr := template.GenGradleLibStr(h.jdkVersion, h.extraLibs)
+				data := template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, h.jdkVersion)
 
 				if data != (template.WebTemplateData{}) {
 					zipData, err := data.GenWebZip() // 获取生成的zip字节流
