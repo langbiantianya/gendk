@@ -17,15 +17,10 @@ web_build:
 	GOARCH=wasm GOOS=js go build -o web/app.wasm
 	go build
 
-web_build_windows:
-	$$env:GOARCH = "wasm"
-	$$env:GOOS = "js"
-	go build -o web/app.wasm
-	go build
-
 web:web_build
 	./gendk
 
-web_windows:web_build_windows
+web_windows:web_build
+	$$env:WEB=1
 	./gendk
 
