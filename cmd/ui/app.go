@@ -14,8 +14,15 @@ import (
 func App() {
 	a := app.NewWithID("com.lbty.gendk")
 	w := a.NewWindow("模板生成工具")
-	w.Resize(fyne.NewSize(400, 700))
-
+	w.Resize(fyne.NewSize(400, 600))
+	// Spring boot 版本选择
+	var springBootVersionContainer *fyne.Container
+	var springBootVersionRadio *widget.Select
+	// 项目类型选择（新增标题）
+	var projectTypeSelect *widget.Select
+	//  项目依赖选择（新增标题）
+	var libSelectCheckGroup *widget.CheckGroup
+	var libSelectContainer *fyne.Container
 	// 项目名称输入框（新增标题）
 	projectNameEntry := widget.NewEntry()
 	projectNameEntry.SetPlaceHolder("请输入项目名 dk_demo")
@@ -32,12 +39,27 @@ func App() {
 	)
 
 	// JDK版本单选（新增标题） "JDK 17"
-	javaVersionRadio := widget.NewRadioGroup([]string{"JDK 1.8"}, func(s string) {})
-	javaVersionRadio.Horizontal = true
+	javaVersionRadio := widget.NewSelect([]string{"JDK 1.8", "JDK 17"}, func(s string) {
+		if springBootVersionContainer != nil {
+			springBootVersionContainer.Hidden = s == "JDK 1.8" || projectTypeSelect.Selected == "SSO"
+			if springBootVersionContainer.Hidden {
+				springBootVersionRadio.Selected = "Spring Boot 2"
+			}
+		}
+
+	})
 	javaVersionRadio.SetSelected("JDK 1.8")
 	javaVersionContainer := container.NewVBox(
 		widget.NewLabel("JDK版本："), // 新增标题
 		javaVersionRadio,
+	)
+
+	// Spring boot 版本选择
+	springBootVersionRadio = widget.NewSelect([]string{"Spring Boot 2", "Spring Boot 3"}, func(s string) {})
+	springBootVersionRadio.SetSelected("Spring Boot 2")
+	springBootVersionContainer = container.NewVBox(
+		widget.NewLabel("Spring Boot 版本："), // 新增标题
+		springBootVersionRadio,
 	)
 
 	// 构建工具单选（新增标题）
@@ -49,8 +71,21 @@ func App() {
 	)
 
 	// 项目类型选择（新增标题）
-	projectTypeSelect := widget.NewSelect([]string{"web 服务"}, func(s string) {})
-	projectTypeSelect.SetSelected("web 服务")
+	projectTypeSelect = widget.NewSelect([]string{"Web", "SSO"}, func(s string) {
+		if springBootVersionContainer != nil {
+			springBootVersionContainer.Hidden = s == "SSO" || javaVersionRadio.Selected == "JDK 1.8"
+			if springBootVersionContainer.Hidden {
+				springBootVersionRadio.Selected = "Spring Boot 2"
+			}
+		}
+		if moduleNameContainer != nil {
+			moduleNameContainer.Hidden = s == "SSO"
+		}
+		if libSelectContainer != nil {
+			libSelectContainer.Hidden = s == "SSO"
+		}
+	})
+	projectTypeSelect.SetSelected("Web")
 	projectTypeContainer := container.NewVBox(
 		widget.NewLabel("项目类型："), // 新增标题
 		projectTypeSelect,
@@ -58,7 +93,7 @@ func App() {
 
 	// 功能多选部分（新增标题）
 	// libSelectBadge := widget.NewLabel("已选：无")
-	libSelectCheckGroup := widget.NewCheckGroup([]string{
+	libSelectCheckGroup = widget.NewCheckGroup([]string{
 		"Hutool All",
 		"OkHttp",
 		"Spring Boot Starter JDBC",
@@ -68,13 +103,9 @@ func App() {
 		"Microsoft JDBC Driver For SQL Server",
 		"PostgreSQL JDBC Driver",
 	}, func(selected []string) {
-		// if len(selected) == 0 {
-		// 	libSelectBadge.SetText("已选：无")
-		// } else {
-		// 	libSelectBadge.SetText("已选：" + strings.Join(selected, "、"))
-		// }
+
 	})
-	libSelectContainer := container.NewVBox(
+	libSelectContainer = container.NewVBox(
 		widget.NewLabel("额外依赖："), // 新增标题
 		// libSelectBadge,
 		libSelectCheckGroup,
@@ -84,47 +115,29 @@ func App() {
 	exportButton := widget.NewButton("导出", func() {
 		projectName := projectNameEntry.Text
 		moduleName := moduleNameEntry.Text
-		javaVersion := javaVersionRadio.Selected
+		jdkVersion := javaVersionRadio.Selected
 		// buildTool := buildToolRadio.Selected
-		// rojectType := projectTypeSelect.Selected
+		projectType := projectTypeSelect.Selected
 		selectedLibs := libSelectCheckGroup.Selected
 		if projectName == "" {
 			dialog.ShowInformation("提示", "请输入项目名", w)
 			return
 		}
-		if moduleName == "" {
-			dialog.ShowInformation("提示", "请输入模块名", w)
-			return
-		}
-
-		var data template.WebTemplateData
-		switch javaVersion {
-		case "JDK 1.8":
-			libStr := ""
-			for _, v := range selectedLibs {
-				libStr += "    implementation (\"" + template.LibsGradleMapJDK8[v] + "\")\n"
+		if !moduleNameContainer.Hidden {
+			if moduleName == "" {
+				dialog.ShowInformation("提示", "请输入模块名", w)
+				return
 			}
-
-			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, "VERSION_1_8")
-			// application, _ := data.GenApplication()
-			// blueprint, _ := data.GenBlueprint()
-			// buildKts, _ := data.GenBuildKts()
-			// runSh, _ := data.GenRunSh()
-			// startWebSh, _ := data.GenStartWebSh()
-			// settingsKts, _ := data.GenSettingsKts()
-			// log.Default().Println("application:", application)
-			// log.Default().Println("blueprint:", blueprint)
-			// log.Default().Println("buildKts:", buildKts)
-			// log.Default().Println("runSh:", runSh)
-			// log.Default().Println("startWebSh:", startWebSh)
-			// log.Default().Println("settingsKts:", settingsKts)
-		case "JDK 17":
-			// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, "VERSION_17")
-			// 处理 JDK 17 相关逻辑
-		default:
-			// 处理其他情况
-			// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
-
+		}
+		var data template.TemplateData
+		switch projectType {
+		case "SSO":
+			data = template.NewSSOTemplateData(2, projectName, jdkVersion)
+			break
+		case "Web":
+			libStr := template.GenGradleLibStr(jdkVersion, selectedLibs)
+			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, jdkVersion)
+			break
 		}
 		if data != (template.WebTemplateData{}) {
 			zipData, err := data.GenZip() // 获取生成的zip字节流
@@ -154,21 +167,16 @@ func App() {
 			dlg.SetFilter(storage.NewExtensionFileFilter([]string{".zip"}))
 			dlg.Show()
 		}
-
-		// log.Default().Println("项目名:", projectName)
-		// log.Default().Println("Java版本:", javaVersion)
-		// log.Default().Println("构建工具:", buildTool)
-		// log.Default().Println("项目类型:", rojectType)
-		// log.Default().Println("选中功能:", selectedLibs)
 	})
-
+	// 默认隐藏
+	springBootVersionContainer.Hide()
 	// 调整主布局为各容器的垂直排列
-	container.NewVBox()
 	content := container.NewScroll(
 		container.NewVBox(
 			projectNameContainer,
 			moduleNameContainer,
 			javaVersionContainer,
+			springBootVersionContainer,
 			buildToolContainer,
 			projectTypeContainer,
 			libSelectContainer,

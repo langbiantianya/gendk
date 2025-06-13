@@ -2,7 +2,7 @@ FROM docker.1ms.run/golang:1.24-bookworm AS builder
 
 WORKDIR /app
 
-ENV BUILD=true
+ENV BUILD=1 WEB=1
 
 COPY   . .
 RUN go env -w GO111MODULE=on &&\
