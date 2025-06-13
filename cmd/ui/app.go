@@ -23,6 +23,9 @@ func App() {
 	//  项目依赖选择（新增标题）
 	var libSelectCheckGroup *widget.CheckGroup
 	var libSelectContainer *fyne.Container
+	// 单点登入类型选择
+	var ssoTypeSelect *widget.Select
+	var ssoTypeContainer *fyne.Container
 	// 项目名称输入框（新增标题）
 	projectNameEntry := widget.NewEntry()
 	projectNameEntry.SetPlaceHolder("请输入项目名 dk_demo")
@@ -84,11 +87,22 @@ func App() {
 		if libSelectContainer != nil {
 			libSelectContainer.Hidden = s == "SSO"
 		}
+		if ssoTypeContainer != nil {
+			ssoTypeContainer.Hidden = s != "SSO"
+		}
 	})
 	projectTypeSelect.SetSelected("Web")
 	projectTypeContainer := container.NewVBox(
 		widget.NewLabel("项目类型："), // 新增标题
 		projectTypeSelect,
+	)
+
+	// 单点登入类型选择
+	ssoTypeSelect = widget.NewSelect([]string{"SAML"}, func(s string) {})
+	ssoTypeSelect.SetSelected("SAML")
+	ssoTypeContainer = container.NewVBox(
+		widget.NewLabel("单点登入类型："), // 新增标题
+		ssoTypeSelect,
 	)
 
 	// 功能多选部分（新增标题）
@@ -119,6 +133,18 @@ func App() {
 		// buildTool := buildToolRadio.Selected
 		projectType := projectTypeSelect.Selected
 		selectedLibs := libSelectCheckGroup.Selected
+		// ssoType := ssoTypeSelect.Selected
+		var springBootVersion int
+
+		switch springBootVersionRadio.Selected {
+
+		case "Spring Boot 2":
+			springBootVersion = 2
+		case "Spring Boot 3":
+			springBootVersion = 3
+
+		}
+
 		if projectName == "" {
 			dialog.ShowInformation("提示", "请输入项目名", w)
 			return
@@ -132,11 +158,12 @@ func App() {
 		var data template.TemplateData
 		switch projectType {
 		case "SSO":
-			data = template.NewSSOTemplateData(2, projectName, jdkVersion)
+			data = template.NewSSOTemplateData(springBootVersion, projectName, jdkVersion)
 			break
 		case "Web":
 			libStr := template.GenGradleLibStr(jdkVersion, selectedLibs)
-			data = template.NewWebTemplateData(2, libStr, projectName, moduleName, jdkVersion)
+
+			data = template.NewWebTemplateData(springBootVersion, libStr, projectName, moduleName, jdkVersion)
 			break
 		}
 		if data != (template.WebTemplateData{}) {
@@ -170,6 +197,7 @@ func App() {
 	})
 	// 默认隐藏
 	springBootVersionContainer.Hide()
+	ssoTypeContainer.Hide()
 	// 调整主布局为各容器的垂直排列
 	content := container.NewScroll(
 		container.NewVBox(
@@ -179,6 +207,7 @@ func App() {
 			springBootVersionContainer,
 			buildToolContainer,
 			projectTypeContainer,
+			ssoTypeContainer,
 			libSelectContainer,
 			exportButton,
 		),
