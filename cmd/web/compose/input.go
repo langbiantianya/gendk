@@ -6,7 +6,7 @@ import "github.com/maxence-charriere/go-app/v10/pkg/app"
 // placeholder: 提示文本
 // value: 当前输入值（双向绑定）
 // onChange: 值变化时的回调（参数为新值）
-func Input(placeholder, value string, onChange func(string)) app.UI {
+func Input(placeholder, value string, onChange func(string)) app.HTMLInput {
 	return app.Input().
 		Type("text").
 		Placeholder(placeholder).

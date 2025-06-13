@@ -18,12 +18,16 @@ type home struct {
 	// 表单状态（用于存储各个组件的值）
 	projectName          string // 项目名称
 	moduleName           string // 模块名称
+	hideModuleName       bool
 	jdkVersion           string // JDK版本
 	hideSelectSpringBoot bool
-	springBootVersion    int      // Spring Boot版本（JDK 17时可选）
-	buildTool            string   // 构建工具
-	projectType          string   // 项目类型
+	springBootVersion    int    // Spring Boot版本（JDK 17时可选）
+	buildTool            string // 构建工具
+	projectType          string // 项目类型
+	ssoProtocol          string
+	hideSelectSSO        bool
 	extraLibs            []string // 额外依赖
+	hideExtraLibs        bool
 }
 
 func (h *home) Render() app.UI {
@@ -58,7 +62,7 @@ func (h *home) Render() app.UI {
 		// 模块名称输入框（绑定moduleName）
 		compose.Input("模块名称", h.moduleName, func(v string) {
 			h.moduleName = v
-		}),
+		}).Hidden(h.hideModuleName),
 
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
@@ -69,7 +73,7 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				app.Log(v)
 				h.jdkVersion = v
-				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8"
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
 				if h.hideSelectSpringBoot {
 					h.springBootVersion = 2
 				}
@@ -106,14 +110,32 @@ func (h *home) Render() app.UI {
 
 		// 项目类型选择（绑定projectType）
 		compose.Select(
-			[]string{"Web"},
+			[]string{"Web", "SSO"},
 			h.projectType,
 			true,
 			"请选择项目类型",
 			func(v string) {
 				h.projectType = v
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
+				h.hideSelectSSO = h.projectType != "SSO"
+				h.hideModuleName = h.projectType == "SSO"
+				h.hideExtraLibs = h.projectType == "SSO"
+				if h.hideSelectSpringBoot {
+					h.springBootVersion = 2
+				}
 			},
 		),
+
+		// 单点登入协议类型选择（绑定ssoProtocol）
+		compose.Select(
+			[]string{"SAML"},
+			h.ssoProtocol,
+			true,
+			"请选择单点登入协议类型",
+			func(v string) {
+				h.ssoProtocol = v
+			},
+		).Hidden(h.hideSelectSSO),
 
 		// 额外依赖多选（绑定extraLibs）
 		compose.CheckboxGroup(
@@ -132,7 +154,7 @@ func (h *home) Render() app.UI {
 			func(v []string) {
 				h.extraLibs = v
 			},
-		),
+		).Hidden(h.hideExtraLibs),
 
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
@@ -141,39 +163,27 @@ func (h *home) Render() app.UI {
 					app.Window().Call("alert", "提示：请输入项目名") // 添加弹窗提示
 					return
 				}
-				if h.moduleName == "" {
+
+				if h.moduleName == "" && !h.hideModuleName {
 					app.Window().Call("alert", "提示：请输入模块名") // 添加弹窗提示
 					return
 				}
 
-				var data template.WebTemplateData
-				switch h.jdkVersion {
-				case "JDK 1.8":
-					app.Log("处理 JDK 1.8")
-					libStr := ""
-					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsMapJDK8[v] + "\")\n"
-					}
-
-					data = template.NewWebTemplateData(2, libStr, h.projectName, h.moduleName, "VERSION_1_8")
-				case "JDK 17":
-					// 处理 JDK 17 相关逻辑
-					app.Log("处理 JDK 17")
-					libStr := ""
-					for _, v := range h.extraLibs {
-						libStr += "    implementation (\"" + template.LibsMapJDK17[v] + "\")\n"
-					}
-					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, "VERSION_17")
-				default:
-					app.Log("其他版本")
-					// 处理其他情况
-					// template.NewWebTemplateData(2, strings.Join(selectedLibs, ","), projectName, moduleName, "VERSION_1_8")
-
+				var data template.TemplateData
+				switch h.projectType {
+				case "SSO":
+					data = template.NewSSOTemplateData(h.springBootVersion, h.projectName, h.jdkVersion)
+					break
+				case "Web":
+					libStr := template.GenGradleLibStr(h.jdkVersion, h.extraLibs)
+					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, h.jdkVersion)
+					break
 				}
 
-				if data != (template.WebTemplateData{}) {
+				if data != nil {
 					zipData, err := data.GenZip() // 获取生成的zip字节流
 					if err != nil {
+						app.Log(err)
 						app.Window().Call("alert", err)
 						return
 					}
@@ -197,12 +207,16 @@ func (h *home) Render() app.UI {
 func App() {
 	app.Route("/", func() app.Composer {
 		return &home{
+			hideModuleName:       false,
 			jdkVersion:           "JDK 1.8",
 			hideSelectSpringBoot: true,
 			springBootVersion:    2,
 			buildTool:            "Gradle",
 			projectType:          "Web",
+			ssoProtocol:          "SAML",
+			hideSelectSSO:        true,
 			extraLibs:            []string{},
+			hideExtraLibs:        false,
 		}
 	})
 	app.RunWhenOnBrowser()

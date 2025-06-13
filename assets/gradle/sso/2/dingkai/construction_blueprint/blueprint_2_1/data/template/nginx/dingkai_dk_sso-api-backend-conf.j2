@@ -1,0 +1,4 @@
+upstream sso_server {
+    {{hosts}}
+    check interval=30000 fall=3 rise=2 timeout=1000 default_down=false type=tcp;
+}
