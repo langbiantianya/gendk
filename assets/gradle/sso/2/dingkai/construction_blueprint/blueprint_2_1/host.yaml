@@ -1,0 +1,49 @@
+hosts:
+  # 根据 sso 的 application.yml 配置文件中的是否高可用来动态生成节点
+  # 如果开了高可用，则选在所有 sbp 的 web 节点
+  # 如果没开，则选择当前节点
+  type: sso
+  port: 8112
+
+#hosts:
+#  type: default
+#  # 端口，生成 nginx backend 使用
+#  port: 8112
+#  host_name:
+#    - hybrid01
+#    - hybrid02
+#    - hybrid03
+
+#如果有多套环境，主机名完全不一样，可以用下面方式区分环境
+#hosts:
+#  type: default
+#  port: 8112
+#  host_name:
+#    pro:
+#      - meta01
+#      - meta02
+#      - meta03
+#    test:
+#      - hybrid01
+#      - hybrid02
+#      - hybrid03
+#
+#使用正则的方式选择部署的节点
+#hosts:
+#  # 正则全匹配
+#  type: re
+#  port: 8112
+#  host_name: ^hybrid.*
+#
+#使用正则的方式，根据环境选择部署及节点
+#hosts:
+#  type: re
+#  port: 8112
+#  host_name:
+#    pro: ^meta.*
+#    test: ^hybrid.*
+#
+#使用执行命令的节点，作为服务所在节点
+#hosts:
+#  type: local
+#  port: 8112

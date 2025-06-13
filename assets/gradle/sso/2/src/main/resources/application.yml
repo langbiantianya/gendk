@@ -1,0 +1,9 @@
+server:
+  port: 8112                       # 单点登录服务端口
+  tomcat:
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+  forward-headers-strategy: framework
+                                                           # jks alias
+

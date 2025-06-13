@@ -1,0 +1,51 @@
+location ^~ /api/sso/login {
+    # ip 透传
+    proxy_set_header X-Real-Ip $clientRealIp;
+    # 请求 host 透传
+    proxy_set_header Host $http_host;
+    # 开启 https 请求
+    proxy_set_header   X-Forwarded-Proto 'https';
+    # 重定向到单点登录服务
+    proxy_pass http://sso_server/sso/login;
+}
+
+location ^~ /sso/login {
+    proxy_set_header X-Real-Ip $clientRealIp;
+    proxy_set_header Host $http_host;
+    proxy_set_header   X-Forwarded-Proto 'https';
+    proxy_pass http://sso_server;
+}
+
+location ^~ /saml/ {
+    proxy_set_header X-Real-Ip $clientRealIp;
+    proxy_set_header Host $http_host;
+    proxy_set_header   X-Forwarded-Proto 'https';
+    proxy_pass http://sso_server;
+}
+location ^~ /saml2/ {
+    proxy_set_header X-Real-Ip $clientRealIp;
+    proxy_set_header Host $http_host;
+    proxy_set_header   X-Forwarded-Proto 'https';
+    proxy_pass http://sso_server;
+}
+
+location ^~ /logout/saml2 {
+    proxy_set_header X-Real-Ip $clientRealIp;
+    proxy_set_header Host $http_host;
+    proxy_set_header   X-Forwarded-Proto 'https';
+    proxy_pass http://sso_server;
+}
+
+location ^~ /login/saml2 {
+    proxy_set_header X-Real-Ip $clientRealIp;
+    proxy_set_header Host $http_host;
+    proxy_set_header   X-Forwarded-Proto 'https';
+    proxy_pass http://sso_server;
+}
+
+#location /saml/metadata.xml {
+#     alias /sensorsdata/main/dingkai/program/dk_sso/sso/conf/saml/idp_metadata.xml;
+#     try_files $uri =404;
+#     expires 30d;
+#     access_log off;
+#}

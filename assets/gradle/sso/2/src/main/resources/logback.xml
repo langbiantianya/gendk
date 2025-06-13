@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    scan：当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。
+    scanPeriod：设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+    debug：当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- 定义日志文件名称 -->
+    <property name="LOG_FILE" value="${sdd.log.file:-service.log}"/>
+    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+    <property name="LOG_DIR" value="${sdd.log.dir:-.}"/>
+
+    <define name="ROOT_LEVEL" class="com.sensorsdata.analytics.sso.utils.LogPropertyDefiner">
+        <argument>sdd.root.logger</argument>
+        <index>0</index>
+    </define>
+
+    <define name="ROOT_APPENDER" class="com.sensorsdata.analytics.sso.utils.LogPropertyDefiner">
+        <argument>sdd.root.logger</argument>
+        <index>1</index>
+    </define>
+
+    <define name="CUSTOM_LEVEL" class="com.sensorsdata.analytics.sso.utils.LogPropertyDefiner">
+        <argument>sdd.custom.logger</argument>
+        <index>0</index>
+    </define>
+
+    <define name="CUSTOM_APPENDER" class="com.sensorsdata.analytics.sso.utils.LogPropertyDefiner">
+        <argument>sdd.custom.logger</argument>
+        <index>1</index>
+    </define>
+
+    <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+
+    <!--
+        key:标识此<timestamp> 的名字；datePattern：设置将当前时间（解析配置文件的时间）转换为字符串的模式，遵循java.txt.SimpleDateFormat的格式。
+    -->
+    <timestamp key="BOOT_SECOND" datePattern="yyyyMMdd'T'HHmmss"/>
+
+    <!-- 控制台输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--
+            encoder：对日志进行格式化，未配置class属性时，默认配置为PatternLayoutEncoder
+        -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <!-- 日志编码 -->
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="DRFA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${LOG_FILE}</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <FileNamePattern>${LOG_DIR}/${LOG_FILE}.%d{yyyy-MM-dd}</FileNamePattern>
+            <!--日志文件保留天数-->
+            <MaxHistory>10</MaxHistory>
+        </rollingPolicy>
+        <!--
+            encoder：对日志进行格式化，未配置class属性时，默认配置为PatternLayoutEncoder
+        -->
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${LOG_PATTERN}</pattern>
+            <!-- 日志编码 -->
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+        </encoder>
+        <!-- 只输出level级别以上的日志 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+    </appender>
+
+    <logger name="com.sensorsdata.analytics.sso" level="${CUSTOM_LEVEL:-DEBUG}" additivity="false">
+        <appender-ref ref="${CUSTOM_APPENDER:-STDOUT}"/>
+    </logger>
+
+    <logger name="net.sf.ehcache" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="shaded.org.apache" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.hazelcast.internal.diagnostics.HealthMonitor" level="WARN" />
+
+    <!--
+        <root>：也是<logger>元素，但是它是根logger。只有一个level属性，被命名为"root".
+    -->
+    <root level="${ROOT_LEVEL:-INFO}">
+        <appender-ref ref="${ROOT_APPENDER:-STDOUT}"/>
+    </root>
+</configuration>

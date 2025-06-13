@@ -41,15 +41,15 @@ func Checkbox(label string, checked bool, onChhange func(bool, string)) app.UI {
 // options: 选项（map[value]label）
 // selected: 当前选中值（切片）
 // onChange: 值变化时的回调（参数为新的选中切片）
-func CheckboxGroup(label string, options []string, selected []string, onChange func([]string)) app.UI {
-	group := app.Div().Class("flex", "flex-col", "gap-3")
+func CheckboxGroup(label string, options []string, selected []string, onChange func([]string)) app.HTMLDiv {
+	group := app.Div().Class("mb-3", "mt-3")
 	var children []app.UI // 用于收集所有子元素
 	currentSelected := make([]string, len(selected))
 	copy(currentSelected, selected)
 	// 组标签
 	if label != "" {
 		children = append(children,
-			app.Label().Class("text-sm", "font-medium", "text-gray-700", "mb-2").Text(label),
+			app.Div().Class("text-sm", "font-medium", "text-gray-700", "mb-3").Text(label),
 		)
 	}
 
