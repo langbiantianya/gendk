@@ -2,9 +2,14 @@ FROM docker.1ms.run/golang:1.24-bookworm AS builder
 
 WORKDIR /app
 
-ENV BUILD=true
+ENV BUILD=1 WEB=1
 
 COPY   . .
+
+RUN apt-get update &&\
+    apt-get upgrade -y &&\
+    apt install libgl1-mesa-dev xorg-dev mesa-utils -y
+
 RUN go env -w GO111MODULE=on &&\
     go env -w GOPROXY=https://goproxy.cn,direct &&\
     go mod tidy &&\
