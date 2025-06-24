@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"io/fs"
+	"log"
 	"strings"
 	"text/template"
 )
@@ -20,7 +21,7 @@ func NewEtlKafka2KafkaTemplateData(projectName string) EtlKafka2KafkaTemplateDat
 
 func (data EtlKafka2KafkaTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/gradle/sso/%d/README.md")
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/README.md")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -41,7 +42,7 @@ func (data EtlKafka2KafkaTemplateData) GenReadme() (string, error) {
 
 func (data EtlKafka2KafkaTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/app/stream_import.yml")
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/app/stream_import.yml")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -61,7 +62,7 @@ func (data EtlKafka2KafkaTemplateData) GenBlueprint() (string, error) {
 
 func (data EtlKafka2KafkaTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/app/bin/run.sh")
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/app/bin/run.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -78,9 +79,48 @@ func (data EtlKafka2KafkaTemplateData) GenRunSh() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
+
 func (data EtlKafka2KafkaTemplateData) GenPom() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/pom.xml")
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/pom.xml")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("pom").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data EtlKafka2KafkaTemplateData) GenCustomPom() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/custom/pom.xml")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("pom").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data EtlKafka2KafkaTemplateData) GenCommonPom() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/maven/etl/sdd/kafka_to_kafka/common/pom.xml")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -103,14 +143,14 @@ func (data EtlKafka2KafkaTemplateData) GenZip() ([]byte, error) {
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
-	// 遍历assets/gradle/web/2目录下所有文件
-	err := fs.WalkDir(distFS, "assets/gradle/etl/sdd/kafka_to_kafka/", func(path string, d fs.DirEntry, walkErr error) error {
+	// 遍历assets/maven/etl/sdd/kafka_to_kafka目录下所有文件
+	err := fs.WalkDir(distFS, "assets/maven/etl/sdd/kafka_to_kafka", func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
 		// 计算相对路径（去除assets/gradle/web/2前缀）
-		relPath := strings.TrimPrefix(path, "assets/gradle/etl/sdd/kafka_to_kafka/")
+		relPath := strings.TrimPrefix(path, "assets/maven/etl/sdd/kafka_to_kafka/")
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}
@@ -144,13 +184,26 @@ func (data EtlKafka2KafkaTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "pom.xml") {
+		} else if relPath == "pom.xml" {
 			strData, err := data.GenPom()
 			if err != nil {
 				return err
 			}
 			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "custom/pom.xml") {
+			strData, err := data.GenCustomPom()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "common/pom.xml") {
+			strData, err := data.GenCommonPom()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
 		} else {
+			log.Default().Println(relPath)
 			// 读取文件内容
 			fileDataS, err := distFS.ReadFile(path)
 			if err != nil {

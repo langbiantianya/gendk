@@ -179,7 +179,7 @@ func (h *home) Render() app.UI {
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
 			OnClick(func(ctx app.Context, e app.Event) {
-				if h.projectName == "" {
+				if h.projectName == "" && !h.hideProjectName {
 					app.Window().Call("alert", "提示：请输入项目名") // 添加弹窗提示
 					return
 				}
@@ -190,19 +190,22 @@ func (h *home) Render() app.UI {
 				}
 
 				var data template.TemplateData
+
 				switch h.projectType {
 				case "SSO":
 					data = template.NewSSOTemplateData(h.springBootVersion, h.projectName, h.jdkVersion)
 				case "Web":
 					libStr := template.GenGradleLibStr(h.jdkVersion, h.extraLibs)
 					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, h.jdkVersion)
+				case "ETL":
+					data = template.NewEtlKafka2KafkaTemplateData(h.projectName)
 				}
 
 				if data != nil {
 					zipData, err := data.GenZip() // 获取生成的zip字节流
 					if err != nil {
 						app.Log(err)
-						app.Window().Call("alert", err)
+						app.Window().Call("alert", err.Error())
 						return
 					}
 					template.SaveZipDataLocally(ctx, e, zipData, h.projectName+".zip")
