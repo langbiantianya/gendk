@@ -1,0 +1,45 @@
+<configuration>
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.file}</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{60} %X{sourceThread} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <maxHistory>30</maxHistory>
+            <fileNamePattern>${log.file}.log.%d{yyyy-MM-dd}</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <!-- This affects logging for both user code and Flink -->
+    <root level="INFO">
+        <appender-ref ref="file"/>
+    </root>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{60} %X{sourceThread} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Log output from org.apache.flink.yarn to the console. This is used by the
+         CliFrontend class when using a per-job YARN cluster. -->
+    <logger name="org.apache.flink.yarn" level="INFO">
+        <appender-ref ref="console"/>
+    </logger>
+    <logger name="org.apache.flink.yarn.cli.FlinkYarnSessionCli" level="INFO">
+        <appender-ref ref="console"/>
+    </logger>
+    <logger name="org.apache.hadoop" level="INFO">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <!-- Suppress the warning that hadoop native libraries are not loaded (irrelevant for the client) -->
+    <logger name="org.apache.hadoop.util.NativeCodeLoader" level="OFF">
+        <appender-ref ref="console"/>
+    </logger>
+
+    <!-- Suppress the irrelevant (wrong) warnings from the Netty channel handler -->
+    <logger name="org.apache.flink.shaded.akka.org.jboss.netty.channel.DefaultChannelPipeline" level="ERROR">
+        <appender-ref ref="file"/>
+    </logger>
+</configuration>

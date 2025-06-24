@@ -3,37 +3,24 @@ package template
 import (
 	"archive/zip"
 	"bytes"
-	"fmt"
 	"io/fs"
 	"strings"
 	"text/template"
 )
 
-type SSOTemplateData struct {
-	SpringBootVersion int
-	ProjectName       string
-	JdkVersion        string
+type EtlKafka2KafkaTemplateData struct {
+	ProjectName string
 }
 
-func NewSSOTemplateData(SpringBootVersion int, ProjectName string, JdkVersion string) SSOTemplateData {
-	switch JdkVersion {
-	case "JDK 1.8":
-		JdkVersion = "VERSION_1_8"
-	case "JDK 17":
-		JdkVersion = "VERSION_17"
-	default:
-		JdkVersion = "VERSION_1_8"
-	}
-	return SSOTemplateData{
-		SpringBootVersion,
-		ProjectName,
-		JdkVersion,
+func NewEtlKafka2KafkaTemplateData(projectName string) EtlKafka2KafkaTemplateData {
+	return EtlKafka2KafkaTemplateData{
+		ProjectName: projectName,
 	}
 }
 
-func (data SSOTemplateData) GenReadme() (string, error) {
+func (data EtlKafka2KafkaTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/README.md", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile("assets/gradle/sso/%d/README.md")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -52,15 +39,15 @@ func (data SSOTemplateData) GenReadme() (string, error) {
 
 }
 
-func (data SSOTemplateData) GenSettingsKts() (string, error) {
+func (data EtlKafka2KafkaTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/settings.gradle.kts", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/app/stream_import.yml")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("buildGradle").Parse(string(buildBytes))
+	tpl, err := template.New("stream_import").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -72,15 +59,34 @@ func (data SSOTemplateData) GenSettingsKts() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
-func (data SSOTemplateData) GenBlueprint() (string, error) {
+func (data EtlKafka2KafkaTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/app/bin/run.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("dk_product_component").Parse(string(buildBytes))
+	tpl, err := template.New("run").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data EtlKafka2KafkaTemplateData) GenPom() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/gradle/etl/sdd/kafka_to_kafka/pom.xml")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("pom").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -92,19 +98,19 @@ func (data SSOTemplateData) GenBlueprint() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
-func (data SSOTemplateData) GenZip() ([]byte, error) {
+func (data EtlKafka2KafkaTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
-	// 遍历assets/gradle/sso/2目录下所有文件
-	err := fs.WalkDir(distFS, fmt.Sprintf("assets/gradle/sso/%d", data.SpringBootVersion), func(path string, d fs.DirEntry, walkErr error) error {
+	// 遍历assets/gradle/web/2目录下所有文件
+	err := fs.WalkDir(distFS, "assets/gradle/etl/sdd/kafka_to_kafka/", func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
-		// 计算相对路径（去除assets/gradle/sso/2前缀）
-		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/gradle/sso/%d/", data.SpringBootVersion))
+		// 计算相对路径（去除assets/gradle/web/2前缀）
+		relPath := strings.TrimPrefix(path, "assets/gradle/etl/sdd/kafka_to_kafka/")
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}
@@ -120,13 +126,13 @@ func (data SSOTemplateData) GenZip() ([]byte, error) {
 		}
 		// 判断文件是否需要替换
 		var fileData []byte
-		if strings.Contains(relPath, "settings.gradle.kts") {
-			strData, err := data.GenSettingsKts()
+		if strings.Contains(relPath, "run.sh") {
+			strData, err := data.GenRunSh()
 			if err != nil {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "dk_product_component.yaml.j2") {
+		} else if strings.Contains(relPath, "stream_import.yml") {
 			strData, err := data.GenBlueprint()
 			if err != nil {
 				return err
@@ -134,6 +140,12 @@ func (data SSOTemplateData) GenZip() ([]byte, error) {
 			fileData = []byte(strData)
 		} else if strings.Contains(relPath, "README.md") {
 			strData, err := data.GenReadme()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "pom.xml") {
+			strData, err := data.GenPom()
 			if err != nil {
 				return err
 			}

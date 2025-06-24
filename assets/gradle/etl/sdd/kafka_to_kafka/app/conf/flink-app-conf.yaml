@@ -1,0 +1,18 @@
+state.backend: ROCKSDB
+state.backend.incremental: true
+state.backend.rocksdb.timer-service.factory: ROCKSDB
+# 保留的 checkpoint 个数，如果是流式场景使用 state 需要记得配置上。
+state.checkpoints.num-retained: 3
+execution.checkpointing.externalized-checkpoint-retention: RETAIN_ON_CANCELLATION
+parallelism.default: 3
+jobmanager.heap.size: 1024m
+taskmanager.memory.process.size: 2048m
+taskmanager.numberOfTaskSlots: 1
+env.java.opts.taskmanager: -XX:OnOutOfMemoryError='kill -9 %p'
+metrics.reporter.enable-auto-discovery: true
+
+# 使用 failure-rate 重启策略。
+restart-strategy.failure-rate.max-failures-per-interval: 3
+restart-strategy.failure-rate.failure-rate-interval: 5 min
+restart-strategy.failure-rate.delay: 10 s
+classloader.parent-first-patterns.additional: org.apache.kafka

@@ -1,0 +1,45 @@
+product_spec:
+  product_name: sdd
+  product_full_name: sensors deliver dev
+  product_global_conf:
+modules:
+  # (需要修改)模块名，可自定义，一般与 git 库名一致，注意不用用"-"，只能用下划线
+  {{.ProjectName}}:
+    module_desc:
+      module_type: empty
+      module_installer_type: empty
+      service_continuous_level: online
+    server_conf:
+    client_conf:
+    roles:
+      # (需要修改)角色名，可自定义，可与模块名一致，注意不用用"-"，只能用下划线
+      {{.ProjectName}}:
+        role_desc:
+          # (需要修改)端口，跟启动占用的端口号保持一致
+          port: 10104
+          role_group: data_access
+        role_monitor_conf:
+          stop_policy:
+            timeout: 20
+            retry_times: 1
+            retry_interval: 0
+          start_policy:
+            timeout: 60
+            retry_times: 1
+            retry_interval: 0
+          check_alive_policy:
+            timeout: 10
+            retry_times: 3
+            retry_interval: 1
+          fix_strategy:
+            max_num: 1
+            min_num: 1
+            restart_all_role: False
+            restart_module: False
+          stateful: False
+          # (需要修改)进程关键字，跟 run.sh 方法里的参数保持一致
+          process_keyword: "proc_sdd_{{.ProjectName}}"
+          # (需要修改)启动命令， 执行 run.sh
+          start_cmd: "sh ${SENSORS_DELIVER_DEV_HOME}/{{.ProjectName}}/bin/run.sh"
+          # 停止命令，不用写
+          stop_cmd: ''

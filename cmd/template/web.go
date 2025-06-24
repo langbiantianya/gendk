@@ -27,10 +27,8 @@ func NewWebTemplateData(
 	switch JdkVersion {
 	case "JDK 1.8":
 		JdkVersion = "VERSION_1_8"
-		break
 	case "JDK 17":
 		JdkVersion = "VERSION_17"
-		break
 	default:
 		JdkVersion = "VERSION_1_8"
 	}
