@@ -2,7 +2,7 @@ package com.sensorsdata.analytics.sso.openapi.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sensorsdata.analytics.sso.openapi.entity.AccountData;
-import com.sensorsdata.analytics.sso.openapi.entity.AccountItem;
+import com.sensorsdata.analytics.sso.openapi.entity.CreateAccountRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -29,6 +29,20 @@ public class ApiAccounts {
         this.objectMapper = objectMapper;
     }
 
+    @SneakyThrows
+    public void CreateAccount(CreateAccountRequest createAccountRequest) {
+        Request request = new Request.Builder()
+                .url(apiDomain + "/sbp/accounts?token=" + apiKey)
+                .put(RequestBody.create(MediaType.parse("application/json"), objectMapper.writeValueAsString(createAccountRequest)))
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        log.info("okhttp: {}", request);
+        Response response = client.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new RuntimeException("请求失败，状态码：" + response.code());
+        }
+    }
 
     /**
      * 获取全部用户

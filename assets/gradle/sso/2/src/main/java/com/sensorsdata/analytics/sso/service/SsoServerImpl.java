@@ -1,5 +1,6 @@
 package com.sensorsdata.analytics.sso.service;
 
+import com.google.common.collect.Lists;
 import com.sensorsdata.analytics.sso.api.LoginApi;
 import com.sensorsdata.analytics.sso.api.LoginApiException;
 import com.sensorsdata.analytics.sso.api.LoginApiResponse;
@@ -10,6 +11,7 @@ import com.sensorsdata.analytics.sso.model.CheckTokenResult;
 import com.sensorsdata.analytics.sso.model.LoginServerUserInfo;
 import com.sensorsdata.analytics.sso.openapi.api.ApiAccounts;
 import com.sensorsdata.analytics.sso.openapi.entity.AccountItem;
+import com.sensorsdata.analytics.sso.openapi.entity.CreateAccountRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,6 +26,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -42,6 +46,21 @@ public class SsoServerImpl implements SsoVerifier {
         this.apiAccounts = apiAccounts;
     }
 
+    /**
+     * 获取全部的project
+     */
+
+    public List<String> getAllProjects() {
+        String queryProjectSql = "select name from project";
+        try {
+            List<String> projects = jdbcTemplate.queryForList(queryProjectSql, String.class);
+            return projects;
+        } catch (Exception e) {
+            log.error("查询all project失败 {}", e);
+            throw e;
+        }
+    }
+
     @Nullable
     public RoleInfo getRole(String project, String roleName) {
         String queryProjectSql = "select id from project where name = ?";
@@ -58,9 +77,7 @@ public class SsoServerImpl implements SsoVerifier {
             String querySql = "select id, name, project_id from role where cname = ? and project_id = ?";
             try {
                 // 查询 name 字段，参数为 cname（防止 SQL 注入）
-                roleInfo = jdbcTemplate.queryForObject(querySql,
-                        (rs, rowNum) -> new RoleInfo(rs.getInt("id"), rs.getString("name"), rs.getInt("project_id")),
-                        roleName, projectId);
+                roleInfo = jdbcTemplate.queryForObject(querySql, (rs, rowNum) -> new RoleInfo(rs.getInt("id"), rs.getString("name"), rs.getInt("project_id")), roleName, projectId);
 
             } catch (Exception e) {
                 log.error("查询用户 name 失败，cname={}", roleName, e);
@@ -91,25 +108,30 @@ public class SsoServerImpl implements SsoVerifier {
         log.info("start get user info");
         log.info("project: {}", project);
         // 获取邮箱信息
-        DefaultSaml2AuthenticatedPrincipal principal =
-                (DefaultSaml2AuthenticatedPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                // 替换为idp中实际的值
+        DefaultSaml2AuthenticatedPrincipal principal = (DefaultSaml2AuthenticatedPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = principal.getFirstAttribute("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress");
         List<String> groups = principal.getAttribute("http://schemas.microsoft.com/ws/2008/06/identity/claims/groups");
         String role = principal.getFirstAttribute("http://schemas.microsoft.com/ws/2008/06/identity/claims/role");
         log.info("email: {}", email);
         log.info("role: {}", role);
         log.info("group: {}", groups);
-// 这一块如果没有角色映射需求可简化直接返回 CheckTokenResult(email)
+// 以下映射角色的内容按需使用，不需要可以直接删除
         CheckTokenResult result = null;
 
 //        判断用户是否存在
         AccountItem account = apiAccounts.getAccounts().getAccounts().stream().filter(accountItem -> accountItem.getAccount().getUsername().equals(email)).findFirst().orElse(null);
-
-        if (account == null) {
-            // 封装从客户平台获取的登录用户信息
+        try {
+            if (account == null) {
+                // 创建用户
+                List<String> allProjects = getAllProjects();
+                List<Integer> roles = allProjects.stream().map(projectStr -> Objects.requireNonNull(getRole(projectStr, role)).getId()).collect(Collectors.toList());
+                CreateAccountRequest accountRequest = new CreateAccountRequest(new CreateAccountRequest.CreateAccount(email, true), roles);
+                apiAccounts.CreateAccount(accountRequest);
+            }
+        } catch (Exception e) {
+            log.error("创建用户失败: ", e);
             // 设置用户名&角色，标识该登录用户的账号
-            if (groups != null && groups.contains("按需修改 允许授权组")) {
+            if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
                 if (groups.size() > 1 && StringUtils.hasText(project)) {
                     RoleInfo roleInfo = getRole(project, groups.get(1));
                     if (roleInfo != null) {
@@ -121,21 +143,23 @@ public class SsoServerImpl implements SsoVerifier {
                     result = new CheckTokenResult(email);
                 }
             }
-
-        } else {
-            if (groups != null && groups.contains("按需修改 允许授权组")) {
-                if (groups.size() > 1 && StringUtils.hasText(project)) {
+        }
+        if (account != null) {
+            if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
+                getAllProjects().forEach(projectStr -> {
+                    if (groups.size() > 1) {
 //                      修改用户角色
-                    RoleInfo roleInfo = getRole(project, groups.get(1));
-                    if (roleInfo != null) {
-                        apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
+                        RoleInfo roleInfo = getRole(projectStr, groups.get(1));
+                        if (roleInfo != null) {
+                            apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
+                        }
+                    } else if (groups.size() == 1 && StringUtils.hasText(defaultRole)) {
+                        RoleInfo roleInfo = getRole(projectStr, defaultRole);
+                        if (roleInfo != null) {
+                            apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
+                        }
                     }
-                } else if (groups.size() == 1 && StringUtils.hasText(project) && StringUtils.hasText(defaultRole)) {
-                    RoleInfo roleInfo = getRole(project, defaultRole);
-                    if (roleInfo != null) {
-                        apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
-                    }
-                }
+                });
                 result = new CheckTokenResult(email);
             }
         }
