@@ -17,15 +17,20 @@ type home struct {
 
 	// 表单状态（用于存储各个组件的值）
 	projectName          string // 项目名称
+	hideProjectName      bool
 	moduleName           string // 模块名称
 	hideModuleName       bool
 	jdkVersion           string // JDK版本
+	hideJdkVersion       bool
 	hideSelectSpringBoot bool
 	springBootVersion    int    // Spring Boot版本（JDK 17时可选）
 	buildTool            string // 构建工具
+	hideSelectBuildTool  bool
 	projectType          string // 项目类型
 	ssoProtocol          string
+	etlProjectType       string
 	hideSelectSSO        bool
+	hideSelectETL        bool
 	extraLibs            []string // 额外依赖
 	hideExtraLibs        bool
 }
@@ -57,7 +62,7 @@ func (h *home) Render() app.UI {
 		// 项目名称输入框（绑定projectName）
 		compose.Input("项目名称", h.projectName, func(v string) {
 			h.projectName = v
-		}),
+		}).Hidden(h.hideProjectName),
 
 		// 模块名称输入框（绑定moduleName）
 		compose.Input("模块名称", h.moduleName, func(v string) {
@@ -73,12 +78,12 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				app.Log(v)
 				h.jdkVersion = v
-				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO" || h.projectType == "ETL"
 				if h.hideSelectSpringBoot {
 					h.springBootVersion = 2
 				}
 			},
-		),
+		).Hidden(h.hideJdkVersion),
 		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
 		compose.Select(
 			[]string{"Spring Boot 2", "Spring Boot 3"},
@@ -97,6 +102,7 @@ func (h *home) Render() app.UI {
 				}
 			},
 		).Hidden(h.hideSelectSpringBoot),
+
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
 			[]string{"Gradle"},
@@ -106,20 +112,23 @@ func (h *home) Render() app.UI {
 			func(v string) {
 				h.buildTool = v
 			},
-		),
+		).Hidden(h.hideSelectBuildTool),
 
 		// 项目类型选择（绑定projectType）
 		compose.Select(
-			[]string{"Web", "SSO"},
+			[]string{"Web", "SSO", "ETL"},
 			h.projectType,
 			true,
 			"请选择项目类型",
 			func(v string) {
 				h.projectType = v
-				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO"
+				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideSelectSSO = h.projectType != "SSO"
-				h.hideModuleName = h.projectType == "SSO"
-				h.hideExtraLibs = h.projectType == "SSO"
+				h.hideModuleName = h.projectType == "SSO" || h.projectType == "ETL"
+				h.hideExtraLibs = h.projectType == "SSO" || h.projectType == "ETL"
+				h.hideSelectETL = h.projectType != "ETL"
+				h.hideJdkVersion = h.projectType == "ETL"
+				h.hideSelectBuildTool = h.projectType == "ETL"
 				if h.hideSelectSpringBoot {
 					h.springBootVersion = 2
 				}
@@ -136,6 +145,17 @@ func (h *home) Render() app.UI {
 				h.ssoProtocol = v
 			},
 		).Hidden(h.hideSelectSSO),
+
+		// etl 项目类型选择（绑定etlProjectType）
+		compose.Select(
+			[]string{"SDD Kafka to Kafka"},
+			h.etlProjectType,
+			true,
+			"请选择 ETL 项目类型",
+			func(v string) {
+				h.etlProjectType = v
+			},
+		).Hidden(h.hideSelectETL),
 
 		// 额外依赖多选（绑定extraLibs）
 		compose.CheckboxGroup(
@@ -173,11 +193,9 @@ func (h *home) Render() app.UI {
 				switch h.projectType {
 				case "SSO":
 					data = template.NewSSOTemplateData(h.springBootVersion, h.projectName, h.jdkVersion)
-					break
 				case "Web":
 					libStr := template.GenGradleLibStr(h.jdkVersion, h.extraLibs)
 					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, h.jdkVersion)
-					break
 				}
 
 				if data != nil {
@@ -207,14 +225,18 @@ func (h *home) Render() app.UI {
 func App() {
 	app.Route("/", func() app.Composer {
 		return &home{
+			hideProjectName:      false,
 			hideModuleName:       false,
 			jdkVersion:           "JDK 1.8",
+			hideJdkVersion:       false,
 			hideSelectSpringBoot: true,
 			springBootVersion:    2,
 			buildTool:            "Gradle",
+			hideSelectBuildTool:  false,
 			projectType:          "Web",
 			ssoProtocol:          "SAML",
 			hideSelectSSO:        true,
+			hideSelectETL:        true,
 			extraLibs:            []string{},
 			hideExtraLibs:        false,
 		}
@@ -227,6 +249,7 @@ func App() {
 			Description: "快速生成定开项目",
 			Scripts:     []string{"https://cdn.tailwindcss.com"},
 		})
+		log.Default().Println("start at :8000")
 		if err := http.ListenAndServe(":8000", nil); err != nil {
 			log.Fatal(err)
 		}

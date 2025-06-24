@@ -21,6 +21,6 @@ web:web_build
 	./gendk
 
 web_windows:web_build
-	$$env:WEB=1
+	export WEB=1
 	./gendk
 
