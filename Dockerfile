@@ -1,14 +1,16 @@
 FROM docker.1ms.run/golang:1.24-bookworm AS builder
 
+RUN apt-get update &&\
+    apt-get upgrade -y &&\
+    apt install libgl1-mesa-dev xorg-dev mesa-utils -y
+
+FROM builder AS build
+
 WORKDIR /app
 
 ENV BUILD=1 WEB=1
 
 COPY   . .
-
-RUN apt-get update &&\
-    apt-get upgrade -y &&\
-    apt install libgl1-mesa-dev xorg-dev mesa-utils -y
 
 RUN go env -w GO111MODULE=on &&\
     go env -w GOPROXY=https://goproxy.cn,direct &&\
@@ -19,8 +21,7 @@ RUN go env -w GO111MODULE=on &&\
     ./gendk
 
 FROM docker.1ms.run/nginx:stable-alpine
-COPY  --from=builder /app/*.html /usr/share/nginx/html/
-COPY  --from=builder /app/*.js /usr/share/nginx/html/
-COPY  --from=builder /app/manifest.webmanifest /usr/share/nginx/html/
-COPY  --from=builder /app/web/ /usr/share/nginx/html/web/
+COPY  --from=build /app/*.html /usr/share/nginx/html/
+COPY  --from=build /app/*.js /usr/share/nginx/html/
+COPY  --from=build /app/web/ /usr/share/nginx/html/web/
 EXPOSE 80
