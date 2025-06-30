@@ -23,5 +23,5 @@ gendk
 go.work
 
 fyne-cross/
-
+out/
 fyne_metadata_init.go

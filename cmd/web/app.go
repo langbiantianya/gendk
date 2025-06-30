@@ -248,8 +248,11 @@ func App() {
 	build := os.Getenv("BUILD")
 	if build == "" {
 		http.Handle("/", &app.Handler{
-			Name:        "模板生成工具",
-			Description: "快速生成定开项目",
+			Icon: app.Icon{
+				Default: "/web/logo.gif", // Specify default favicon.
+			},
+			Name:        "定开项目生成器",
+			Description: "摸个鱼吧",
 			Scripts:     []string{"https://cdn.tailwindcss.com"},
 		})
 		log.Default().Println("start at :8000")
@@ -258,8 +261,11 @@ func App() {
 		}
 	} else {
 		err := app.GenerateStaticWebsite(".", &app.Handler{
-			Name:        "模板生成工具",
-			Description: "快速生成定开项目",
+			Icon: app.Icon{
+				Default: "/web/logo.gif", // Specify default favicon.
+			},
+			Name:        "定开项目生成器",
+			Description: "摸个鱼吧",
 			Scripts:     []string{"https://cdn.tailwindcss.com"},
 		})
 
