@@ -23,5 +23,6 @@ RUN go env -w GO111MODULE=on &&\
 FROM docker.1ms.run/nginx:stable-alpine
 COPY  --from=build /app/*.html /usr/share/nginx/html/
 COPY  --from=build /app/*.js /usr/share/nginx/html/
+COPY  --from=build /app/manifest.webmanifest /usr/share/nginx/html/
 COPY  --from=build /app/web/ /usr/share/nginx/html/web/
 EXPOSE 80
