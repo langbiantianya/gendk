@@ -4,7 +4,7 @@
 
 1. idp metadata 地址客户提供
 2. entityId 自己编，生成 metadata 提供给客户他们注册
-3. [`sensorsKeystore.jks`](src/main/resources/saml/sensorsKeystore.jks)需要在部署机器生成，然后导入客户给的密钥
+3. [`sensorsKeystore.jks`](src/main/resources/saml/sensorsKeystore.jks)需要使用jdk生成，然后导入客户给的密钥
 4. idp_metadata.xml 和 sp_metadata.xml 请放在`resources/saml`下面
 5. 自己在 sp 的 nginx 配置里面加个配置代理 sp
 
@@ -78,12 +78,12 @@ sbpadmin business_config set -p sbp -k enable_oauth_auto_create_user -v false
 ### 首次
 
 ```shell
-dingkai install -p ralphlauren_sso -f sso.tar --default
+dingkai install -p {{.ProjectName}} -f sso.tar --default
 
 ```
 
 ### 更新
 
 ```shell
-dingkai install -p ralphlauren_sso -f sso.tar --default --reinstall
+dingkai install -p {{.ProjectName}} -f sso.tar --default --reinstall
 ```
