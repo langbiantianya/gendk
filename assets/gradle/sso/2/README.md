@@ -1,4 +1,4 @@
-# vf_sso
+# {{.ProjectName}}
 
 ## tips
 

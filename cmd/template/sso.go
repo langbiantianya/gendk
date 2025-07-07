@@ -51,7 +51,26 @@ func (data SSOTemplateData) GenReadme() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 
 }
+func (data SSOTemplateData) GenBuildKts() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/build.gradle.kts", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
 
+	// 解析模板内容
+	tpl, err := template.New("buildGradle").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+
+}
 func (data SSOTemplateData) GenSettingsKts() (string, error) {
 	// 读取嵌入的模板文件
 	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/settings.gradle.kts", data.SpringBootVersion))
@@ -122,6 +141,12 @@ func (data SSOTemplateData) GenZip() ([]byte, error) {
 		var fileData []byte
 		if strings.Contains(relPath, "settings.gradle.kts") {
 			strData, err := data.GenSettingsKts()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "build.gradle.kts") {
+			strData, err := data.GenBuildKts()
 			if err != nil {
 				return err
 			}
