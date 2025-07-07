@@ -69,7 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public RelyingPartyRegistrationRepository relyingPartyRegistrationRepository()
             throws KeyStoreException, CertificateException, IOException, NoSuchAlgorithmException, UnrecoverableKeyException {
         String domain = "https://" + hostname;
-        String registrationId = "vf";
+        String registrationId = "更换为项目实际地址";
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(new ClassPathResource(jksPath).getInputStream(), storepass.toCharArray());
         log.info("JKS file loaded successfully");

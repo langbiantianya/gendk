@@ -34,57 +34,59 @@ import java.util.stream.Collectors;
 public class SsoServerImpl implements SsoVerifier {
 
     private final ApiConfig apiConfig;
-    private final JdbcTemplate jdbcTemplate;
-    private final ApiAccounts apiAccounts;
+    // private final JdbcTemplate jdbcTemplate;
+    // private final ApiAccounts apiAccounts;
 
     @Value("${sensors.login.defaultRole}")
     private String defaultRole;
 
-    public SsoServerImpl(ApiConfig apiConfig, DataSource dataSource, ApiAccounts apiAccounts) {
+    public SsoServerImpl(ApiConfig apiConfig,
+    //  DataSource dataSource, ApiAccounts apiAccounts
+     ) {
         this.apiConfig = apiConfig;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.apiAccounts = apiAccounts;
+        // this.jdbcTemplate = new JdbcTemplate(dataSource);
+        // this.apiAccounts = apiAccounts;
     }
 
-    /**
-     * 获取全部的project
-     */
+    // /**
+    //  * 获取全部的project
+    //  */
 
-    public List<String> getAllProjects() {
-        String queryProjectSql = "select name from project";
-        try {
-            List<String> projects = jdbcTemplate.queryForList(queryProjectSql, String.class);
-            return projects;
-        } catch (Exception e) {
-            log.error("查询all project失败 {}", e);
-            throw e;
-        }
-    }
+    // public List<String> getAllProjects() {
+    //     String queryProjectSql = "select name from project";
+    //     try {
+    //         List<String> projects = jdbcTemplate.queryForList(queryProjectSql, String.class);
+    //         return projects;
+    //     } catch (Exception e) {
+    //         log.error("查询all project失败 {}", e);
+    //         throw e;
+    //     }
+    // }
 
-    @Nullable
-    public RoleInfo getRole(String project, String roleName) {
-        String queryProjectSql = "select id from project where name = ?";
-        RoleInfo roleInfo = null;
-        Integer projectId = null;
-        try {
-            // 查询 name 字段，参数为 cname（防止 SQL 注入）
-            projectId = jdbcTemplate.queryForObject(queryProjectSql, Integer.class, project);
+    // @Nullable
+    // public RoleInfo getRole(String project, String roleName) {
+    //     String queryProjectSql = "select id from project where name = ?";
+    //     RoleInfo roleInfo = null;
+    //     Integer projectId = null;
+    //     try {
+    //         // 查询 name 字段，参数为 cname（防止 SQL 注入）
+    //         projectId = jdbcTemplate.queryForObject(queryProjectSql, Integer.class, project);
 
-        } catch (Exception e) {
-            log.error("查询用户 name 失败，project={}", project, e);
-        }
-        if (projectId != null) {
-            String querySql = "select id, name, project_id from role where cname = ? and project_id = ?";
-            try {
-                // 查询 name 字段，参数为 cname（防止 SQL 注入）
-                roleInfo = jdbcTemplate.queryForObject(querySql, (rs, rowNum) -> new RoleInfo(rs.getInt("id"), rs.getString("name"), rs.getInt("project_id")), roleName, projectId);
+    //     } catch (Exception e) {
+    //         log.error("查询用户 name 失败，project={}", project, e);
+    //     }
+    //     if (projectId != null) {
+    //         String querySql = "select id, name, project_id from role where cname = ? and project_id = ?";
+    //         try {
+    //             // 查询 name 字段，参数为 cname（防止 SQL 注入）
+    //             roleInfo = jdbcTemplate.queryForObject(querySql, (rs, rowNum) -> new RoleInfo(rs.getInt("id"), rs.getString("name"), rs.getInt("project_id")), roleName, projectId);
 
-            } catch (Exception e) {
-                log.error("查询用户 name 失败，cname={}", roleName, e);
-            }
-        }
-        return roleInfo;
-    }
+    //         } catch (Exception e) {
+    //             log.error("查询用户 name 失败，cname={}", roleName, e);
+    //         }
+    //     }
+    //     return roleInfo;
+    // }
 
     /**
      * 该方法用于需要根据客户提供的接口文档，
@@ -115,60 +117,61 @@ public class SsoServerImpl implements SsoVerifier {
         log.info("email: {}", email);
         log.info("role: {}", role);
         log.info("group: {}", groups);
+        CheckTokenResult result = new CheckTokenResult(email);
+
 // 以下映射角色的内容按需使用，不需要可以直接删除
-        CheckTokenResult result = null;
 
-//        判断用户是否存在
-        AccountItem account = apiAccounts.getAccounts().getAccounts().stream().filter(accountItem -> accountItem.getAccount().getUsername().equals(email)).findFirst().orElse(null);
-        try {
-            if (account == null) {
-                // 创建用户
-                List<String> allProjects = getAllProjects();
-                List<Integer> roles = allProjects.stream().map(projectStr -> Objects.requireNonNull(getRole(projectStr, role)).getId()).collect(Collectors.toList());
-                CreateAccountRequest accountRequest = new CreateAccountRequest(new CreateAccountRequest.CreateAccount(email, true), roles);
-                apiAccounts.CreateAccount(accountRequest);
-            }
-        } catch (Exception e) {
-            log.error("创建用户失败: ", e);
-            // 设置用户名&角色，标识该登录用户的账号
-            if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
-                if (groups.size() > 1 && StringUtils.hasText(project)) {
-                    RoleInfo roleInfo = getRole(project, groups.get(1));
-                    if (roleInfo != null) {
-                        result = new CheckTokenResult(email, roleInfo.getName());
-                    } else {
-                        result = new CheckTokenResult(email);
-                    }
-                } else {
-                    result = new CheckTokenResult(email);
-                }
-            }
-        }
-        if (account != null) {
-            if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
-                getAllProjects().forEach(projectStr -> {
-                    if (groups.size() > 1) {
-//                      修改用户角色
-                        RoleInfo roleInfo = getRole(projectStr, groups.get(1));
-                        if (roleInfo != null) {
-                            apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
-                        }
-                    } else if (groups.size() == 1 && StringUtils.hasText(defaultRole)) {
-                        RoleInfo roleInfo = getRole(projectStr, defaultRole);
-                        if (roleInfo != null) {
-                            apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
-                        }
-                    }
-                });
-                result = new CheckTokenResult(email);
-            }
-        }
+// //        判断用户是否存在
+//         AccountItem account = apiAccounts.getAccounts().getAccounts().stream().filter(accountItem -> accountItem.getAccount().getUsername().equals(email)).findFirst().orElse(null);
+//         try {
+//             if (account == null) {
+//                 // 创建用户
+//                 List<String> allProjects = getAllProjects();
+//                 List<Integer> roles = allProjects.stream().map(projectStr -> Objects.requireNonNull(getRole(projectStr, role)).getId()).collect(Collectors.toList());
+//                 CreateAccountRequest accountRequest = new CreateAccountRequest(new CreateAccountRequest.CreateAccount(email, true), roles);
+//                 apiAccounts.CreateAccount(accountRequest);
+//             }
+//         } catch (Exception e) {
+//             log.error("创建用户失败: ", e);
+//             // 设置用户名&角色，标识该登录用户的账号
+//             if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
+//                 if (groups.size() > 1 && StringUtils.hasText(project)) {
+//                     RoleInfo roleInfo = getRole(project, groups.get(1));
+//                     if (roleInfo != null) {
+//                         result = new CheckTokenResult(email, roleInfo.getName());
+//                     } else {
+//                         result = new CheckTokenResult(email);
+//                     }
+//                 } else {
+//                     result = new CheckTokenResult(email);
+//                 }
+//             }
+//         }
+//         if (account != null) {
+//             if (groups != null && groups.contains("GRP_WW_APP_SensorsData_SSO_Web_Analytics_VF_Corp")) {
+//                 getAllProjects().forEach(projectStr -> {
+//                     if (groups.size() > 1) {
+// //                      修改用户角色
+//                         RoleInfo roleInfo = getRole(projectStr, groups.get(1));
+//                         if (roleInfo != null) {
+//                             apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
+//                         }
+//                     } else if (groups.size() == 1 && StringUtils.hasText(defaultRole)) {
+//                         RoleInfo roleInfo = getRole(projectStr, defaultRole);
+//                         if (roleInfo != null) {
+//                             apiAccounts.updateAccount(account.getAccount().getId(), Collections.singletonList(roleInfo.getId()), roleInfo.getProjectId());
+//                         }
+//                     }
+//                 });
+//                 result = new CheckTokenResult(email);
+//             }
+//         }
 
-        // 打印 result 日志
-        log.info("result: {}", result);
-        if (StringUtils.hasText(project) && result != null) {
-            result.setProjectName(project);
-        }
+//         // 打印 result 日志
+//         log.info("result: {}", result);
+//         if (StringUtils.hasText(project) && result != null) {
+//             result.setProjectName(project);
+//         }
 
         return result;
     }

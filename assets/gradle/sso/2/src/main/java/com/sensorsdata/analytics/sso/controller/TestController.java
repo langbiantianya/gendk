@@ -35,15 +35,17 @@ import java.util.Collections;
 public class TestController {
 
     ResourceLoader resourceLoader;
-    private final JdbcTemplate jdbcTemplate;
-    private final ApiAccounts apiAccounts;
+    // private final JdbcTemplate jdbcTemplate;
+    // private final ApiAccounts apiAccounts;
 
     private final SsoServerImpl ssoVerifier;
 
-    public TestController(ResourceLoader resourceLoader, DataSource dataSource, ApiAccounts apiAccounts, SsoVerifier ssoVerifier) {
+    public TestController(ResourceLoader resourceLoader,
+    //  DataSource dataSource, ApiAccounts apiAccounts, 
+     SsoVerifier ssoVerifier) {
         this.resourceLoader = resourceLoader;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.apiAccounts = apiAccounts;
+        // this.jdbcTemplate = new JdbcTemplate(dataSource);
+        // this.apiAccounts = apiAccounts;
 
         this.ssoVerifier = (SsoServerImpl) ssoVerifier;
     }

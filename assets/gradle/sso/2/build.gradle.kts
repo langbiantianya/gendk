@@ -1,5 +1,5 @@
 plugins {
-    id("org.springframework.boot").version("2.4.2")
+id("org.springframework.boot").version("2.7.18")
     id("io.spring.dependency-management").version("1.0.11.RELEASE")
     id("java")
 }
@@ -21,8 +21,8 @@ dependencies {
 //        exclude(group = "com.hazelcast", module = "hazelcast")
     }
     implementation("com.hazelcast:hazelcast:3.12.12")
-    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-    implementation("com.mysql:mysql-connector-j:8.2.0")
+//    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
+//    implementation("com.mysql:mysql-connector-j:8.2.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 //    implementation("com.sensorsdata.airline:guidance-dingkai-mysql:1.0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.16")

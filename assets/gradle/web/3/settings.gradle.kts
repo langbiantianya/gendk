@@ -2,8 +2,7 @@ rootProject.name = "{{.ModuleName}}"
 
 val urlMaps = mapOf(
     "https://repo.maven.apache.org/maven2" to "https://maven.aliyun.com/repository/public",
-    "https://repo1.maven.apache.org/maven2" to "https://mirrors.cloud.tencent.com/nexus/repository/maven-public/",
-    "https://dl.google.com/dl/android/maven2" to "https://mirrors.cloud.tencent.com/nexus/repository/maven-public/",
+    "https://repo1.maven.apache.org/maven2" to "https://maven.aliyun.com/nexus/content/groups/public",
     "https://plugins.gradle.org/m2" to "https://maven.aliyun.com/repository/gradle-plugin"
 )
 
@@ -20,8 +19,9 @@ fun RepositoryHandler.enableMirror() {
 }
 gradle.allprojects {
     repositories {
-        mavenCentral()
+        maven("https://jfrog-internal.sensorsdata.cn/artifactory/maven-public/")
         maven("https://maven.aliyun.com/repository/gradle-plugin")
+        mavenCentral()
 
     }
     buildscript {
