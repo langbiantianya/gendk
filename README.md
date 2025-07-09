@@ -4,7 +4,20 @@
 
 ## 这个工具能干什么
 
-帮你快速生成定开项目，减少和和 dingkai 工具斗智斗勇调整蓝图的时间。
+帮你快速生成定开项目，减少和和 dingkai 工具斗智斗勇调整蓝图的时间。  
+用该工具生成的 gradle 项目可以放心大胆的不去管 jdk 版本，gradle 会自己处理好 jdk 版本，更可以直接使用 vscode 或者 trea 这些 ide 开箱即用。
+
+## 如何使用 gitlab 的 ci
+
+使用下面的共享 ci 配置文件并新建 release/xxx 分支
+
+### gradle
+
+deliver/deliver-package.yml@general-utilities/share-cicd
+
+### maven
+
+product/deliver.yml@general-utilities/share-cicd
 
 ## 如何编译
 
