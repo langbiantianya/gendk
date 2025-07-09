@@ -33,6 +33,10 @@ type home struct {
 	hideSelectETL        bool
 	extraLibs            []string // 额外依赖
 	hideExtraLibs        bool
+	idpXml               string
+	hideIdpxml           bool
+	cerKey               string
+	hideCerKey           bool
 }
 
 func (h *home) Render() app.UI {
@@ -242,6 +246,8 @@ func App() {
 			hideSelectETL:        true,
 			extraLibs:            []string{},
 			hideExtraLibs:        false,
+			hideIdpxml:           true,
+			hideCerKey:           true,
 		}
 	})
 	app.RunWhenOnBrowser()
