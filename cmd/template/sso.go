@@ -13,21 +13,27 @@ type SSOTemplateData struct {
 	SpringBootVersion int
 	ProjectName       string
 	JdkVersion        string
+	JdkVersionNumber  int
 }
 
 func NewSSOTemplateData(SpringBootVersion int, ProjectName string, JdkVersion string) SSOTemplateData {
+	var JdkVersionNumber int
 	switch JdkVersion {
 	case "JDK 1.8":
 		JdkVersion = "VERSION_1_8"
+		JdkVersionNumber = 8
 	case "JDK 17":
 		JdkVersion = "VERSION_17"
+		JdkVersionNumber = 17
 	default:
 		JdkVersion = "VERSION_1_8"
+		JdkVersionNumber = 8
 	}
 	return SSOTemplateData{
 		SpringBootVersion,
 		ProjectName,
 		JdkVersion,
+		JdkVersionNumber,
 	}
 }
 

@@ -1,17 +1,18 @@
 plugins {
 id("org.springframework.boot").version("2.7.18")
-    id("io.spring.dependency-management").version("1.0.11.RELEASE")
+    id("io.spring.dependency-management").version("1.1.7")
     id("java")
 }
 
 group = "com.sensorsdata.analytics.sso"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.{{.JdkVersion}}
 
-repositories {
-    maven("https://jfrog-internal.sensorsdata.cn/artifactory/maven-public/")
-    mavenCentral()
-
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of({{.JdkVersionNumber}})
+    }
+    targetCompatibility = JavaVersion.{{.JdkVersion}}
+    sourceCompatibility = JavaVersion.{{.JdkVersion}}
 }
 
 dependencies {

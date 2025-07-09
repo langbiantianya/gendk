@@ -8,12 +8,13 @@ plugins {
 
 group = "com.sensorsdata"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.{{.JdkVersion}}
 
-repositories {
-    maven("https://jfrog-internal.sensorsdata.cn/artifactory/maven-public/")
-    mavenCentral()
-
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of({{.JdkVersionNumber}})
+    }
+    targetCompatibility = JavaVersion.{{.JdkVersion}}
+    sourceCompatibility = JavaVersion.{{.JdkVersion}}
 }
 
 dependencies {

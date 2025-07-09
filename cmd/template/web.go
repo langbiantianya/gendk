@@ -15,6 +15,7 @@ type WebTemplateData struct {
 	ProjectName       string
 	ModuleName        string
 	JdkVersion        string
+	JdkVersionNumber  int
 }
 
 func NewWebTemplateData(
@@ -23,14 +24,17 @@ func NewWebTemplateData(
 	ProjectName string,
 	ModuleName string,
 	JdkVersion string) WebTemplateData {
-
+	var JdkVersionNumber int
 	switch JdkVersion {
 	case "JDK 1.8":
 		JdkVersion = "VERSION_1_8"
+		JdkVersionNumber = 8
 	case "JDK 17":
 		JdkVersion = "VERSION_17"
+		JdkVersionNumber = 17
 	default:
 		JdkVersion = "VERSION_1_8"
+		JdkVersionNumber = 8
 	}
 
 	return WebTemplateData{
@@ -39,6 +43,7 @@ func NewWebTemplateData(
 		ProjectName,
 		ModuleName,
 		JdkVersion,
+		JdkVersionNumber,
 	}
 
 }
