@@ -65,12 +65,6 @@ make windows
 make linux
 ```
 
-#### mac
-
-```shell
-make mac
-```
-
 #### android
 
 ```shell
