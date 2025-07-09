@@ -14,7 +14,7 @@ import com.sensorsdata.analytics.sso.openapi.entity.AccountItem;
 import com.sensorsdata.analytics.sso.openapi.entity.CreateAccountRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jdbc.core.JdbcTemplate;
+// import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -40,8 +40,8 @@ public class SsoServerImpl implements SsoVerifier {
     @Value("${sensors.login.defaultRole}")
     private String defaultRole;
 
-    public SsoServerImpl(ApiConfig apiConfig,
-    //  DataSource dataSource, ApiAccounts apiAccounts
+    public SsoServerImpl(ApiConfig apiConfig
+    // ,DataSource dataSource, ApiAccounts apiAccounts
      ) {
         this.apiConfig = apiConfig;
         // this.jdbcTemplate = new JdbcTemplate(dataSource);
