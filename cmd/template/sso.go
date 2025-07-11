@@ -132,6 +132,66 @@ func (data SSOTemplateData) GenBlueprint() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
+func (data SSOTemplateData) GenApplicationProd() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/src/main/resources/application-prod.yml", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("application-prod").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
+func (data SSOTemplateData) GenApplicationDev() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/src/main/resources/application-dev.yml", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("application-dev").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data SSOTemplateData) GenSecurityConfiguration() (string, error) {
+
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/sso/%d/src/main/java/com/sensorsdata/analytics/sso/config/SecurityConfiguration.java", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("SecurityConfiguration").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
 func (data SSOTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
@@ -166,6 +226,30 @@ func (data SSOTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "application-dev.yml") {
+			strData, err := data.GenApplicationDev()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "application-prod.yml") {
+			strData, err := data.GenApplicationProd()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "SecurityConfiguration.java") {
+			strData, err := data.GenSecurityConfiguration()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "idp_metadata.xml") {
+			fileData = []byte(data.Idp)
+		} else if strings.Contains(relPath, "sp_metadata.xml") {
+			fileData = []byte(data.Sp)
+		} else if strings.Contains(relPath, "Sensor-Analytics.cer") {
+			fileData = []byte(data.Pem)
 		} else if strings.Contains(relPath, "build.gradle.kts") {
 			strData, err := data.GenBuildKts()
 			if err != nil {

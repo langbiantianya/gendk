@@ -211,7 +211,7 @@ func (h *home) Render() app.UI {
 		compose.FileInput("选择pem CA证书文件", func(v string) {
 			h.pemCA = v
 			app.Log(v)
-		}, "text/xml").Hidden(h.hidePemCA),
+		}, "application/x-x509-ca-cert").Hidden(h.hidePemCA),
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
 			OnClick(func(ctx app.Context, e app.Event) {

@@ -1,5 +1,5 @@
 plugins {
-id("org.springframework.boot").version("2.7.18")
+    id("org.springframework.boot").version("2.7.18")
     id("io.spring.dependency-management").version("1.1.7")
     id("java")
 }
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.springframework.security:spring-security-saml2-service-provider")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
-
+    developmentOnly("org.springframework.boot:spring-boot-starter-actuator")
 
 }
 
