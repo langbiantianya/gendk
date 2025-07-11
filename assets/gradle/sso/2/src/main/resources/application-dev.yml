@@ -31,7 +31,7 @@ sensors:
 saml2:
   metadata-url: http://localhost:8001/saml/idp_metadata.xml  # IDP metadata 路径
   sp-metadata-url: src/main/resources/saml/sp_metadata.xml
-  entityId: 与sp保持一致
+  entityId: {{.EntityID}}
   hostname: localhost                                           # 请求域名 domain
   protocol: https                                                                        # HTTP Method
   storeFilePath: saml/sensorsKeystore.jks                                      # jks 文件路径

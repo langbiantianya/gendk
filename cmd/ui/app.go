@@ -158,7 +158,7 @@ func App() {
 		var data template.TemplateData
 		switch projectType {
 		case "SSO":
-			data = template.NewSSOTemplateData(springBootVersion, projectName, jdkVersion)
+			// data = template.NewSSOTemplateData(springBootVersion, projectName, jdkVersion)
 			break
 		case "Web":
 			libStr := template.GenGradleLibStr(jdkVersion, selectedLibs)

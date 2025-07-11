@@ -88,12 +88,12 @@ sbpadmin business_config set -p sbp -k enable_oauth_auto_create_user -v false
 ### 首次
 
 ```shell
-dingkai install -p {{.ProjectName}} -f sso.tar --default
+dingkai install -p dk_sso -f sso.tar --default
 
 ```
 
 ### 更新
 
 ```shell
-dingkai install -p {{.ProjectName}} -f sso.tar --default --reinstall
+dingkai install -p dk_sso -f sso.tar --default --reinstall
 ```

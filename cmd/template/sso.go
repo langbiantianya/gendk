@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
+	"gendk/public/utils"
 	"io/fs"
 	"strings"
 	"text/template"
@@ -14,9 +15,18 @@ type SSOTemplateData struct {
 	ProjectName       string
 	JdkVersion        string
 	JdkVersionNumber  int
+	Idp               string
+	Sp                string
+	Pem               string
+	EntityID          string
+	RegistrationId    string
 }
 
-func NewSSOTemplateData(SpringBootVersion int, ProjectName string, JdkVersion string) SSOTemplateData {
+func NewSSOTemplateData(SpringBootVersion int, ProjectName, JdkVersion, idpXml, pemCA, entityID, endpoint, logoutEndpoint string) SSOTemplateData {
+	// 生成sp
+	sp := utils.GenerateEntityDescriptor(pemCA, entityID, endpoint, logoutEndpoint)
+	spStr, _ := utils.EntityDescriptorToXML(sp)
+	registrationId, _ := utils.GetLastPathSegment(endpoint)
 	var JdkVersionNumber int
 	switch JdkVersion {
 	case "JDK 1.8":
@@ -34,6 +44,11 @@ func NewSSOTemplateData(SpringBootVersion int, ProjectName string, JdkVersion st
 		ProjectName,
 		JdkVersion,
 		JdkVersionNumber,
+		idpXml,
+		spStr,
+		pemCA,
+		entityID,
+		registrationId,
 	}
 }
 

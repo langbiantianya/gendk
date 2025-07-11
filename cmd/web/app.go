@@ -37,6 +37,12 @@ type home struct {
 	hideIdpxml           bool
 	pemCA                string
 	hidePemCA            bool
+	entityID             string
+	hideEntityID         bool
+	endpoint             string
+	hideEndpoint         bool
+	logoutEndpoint       string
+	hideLogoutEndpoint   bool
 }
 
 func (h *home) Render() app.UI {
@@ -130,6 +136,9 @@ func (h *home) Render() app.UI {
 				h.hideSelectSSO = h.projectType != "SSO"
 				h.hideIdpxml = h.projectType != "SSO"
 				h.hidePemCA = h.projectType != "SSO"
+				h.hideEntityID = h.projectType != "SSO"
+				h.hideEndpoint = h.projectType != "SSO"
+				h.hideLogoutEndpoint = h.projectType != "SSO"
 				h.hideModuleName = h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideExtraLibs = h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideSelectETL = h.projectType != "ETL"
@@ -181,6 +190,18 @@ func (h *home) Render() app.UI {
 				h.extraLibs = v
 			},
 		).Hidden(h.hideExtraLibs),
+		// entityID
+		compose.Input("请输入entityID", h.entityID, func(v string) {
+			h.entityID = v
+		}).Hidden(h.hideEntityID),
+		// endpoint
+		compose.Input("请输入endpoint", h.endpoint, func(v string) {
+			h.endpoint = v
+		}).Hidden(h.hideEndpoint),
+		// logoutEndpoint
+		compose.Input("请输入logoutEndpoint", h.logoutEndpoint, func(v string) {
+			h.logoutEndpoint = v
+		}).Hidden(h.hideLogoutEndpoint),
 		// idpxml 选择器
 		compose.FileInput("选择IDP文件", func(v string) {
 			h.idpXml = v
@@ -188,7 +209,7 @@ func (h *home) Render() app.UI {
 		}, "text/xml").Hidden(h.hideIdpxml),
 		// pemCA 选择器
 		compose.FileInput("选择pem CA证书文件", func(v string) {
-			h.idpXml = v
+			h.pemCA = v
 			app.Log(v)
 		}, "text/xml").Hidden(h.hidePemCA),
 		// 导出按钮（点击时打印所有值）
@@ -208,7 +229,7 @@ func (h *home) Render() app.UI {
 
 				switch h.projectType {
 				case "SSO":
-					data = template.NewSSOTemplateData(h.springBootVersion, h.projectName, h.jdkVersion)
+					data = template.NewSSOTemplateData(h.springBootVersion, h.projectName, h.jdkVersion, h.idpXml, h.pemCA, h.entityID, h.endpoint, h.logoutEndpoint)
 				case "Web":
 					libStr := template.GenGradleLibStr(h.jdkVersion, h.extraLibs)
 					data = template.NewWebTemplateData(h.springBootVersion, libStr, h.projectName, h.moduleName, h.jdkVersion)
@@ -259,6 +280,9 @@ func App() {
 			hideExtraLibs:        false,
 			hideIdpxml:           true,
 			hidePemCA:            true,
+			hideEntityID:         true,
+			hideEndpoint:         true,
+			hideLogoutEndpoint:   true,
 		}
 	})
 	app.RunWhenOnBrowser()

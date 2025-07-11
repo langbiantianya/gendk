@@ -5,5 +5,4 @@ server:
       remote-ip-header: x-forwarded-for
       protocol-header: x-forwarded-proto
   forward-headers-strategy: framework
-                                                           # jks alias
 
