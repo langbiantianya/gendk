@@ -35,8 +35,8 @@ type home struct {
 	hideExtraLibs        bool
 	idpXml               string
 	hideIdpxml           bool
-	cerKey               string
-	hideCerKey           bool
+	pemCA                string
+	hidePemCA            bool
 }
 
 func (h *home) Render() app.UI {
@@ -128,6 +128,8 @@ func (h *home) Render() app.UI {
 				h.projectType = v
 				h.hideSelectSpringBoot = h.jdkVersion == "JDK 1.8" || h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideSelectSSO = h.projectType != "SSO"
+				h.hideIdpxml = h.projectType != "SSO"
+				h.hidePemCA = h.projectType != "SSO"
 				h.hideModuleName = h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideExtraLibs = h.projectType == "SSO" || h.projectType == "ETL"
 				h.hideSelectETL = h.projectType != "ETL"
@@ -179,7 +181,16 @@ func (h *home) Render() app.UI {
 				h.extraLibs = v
 			},
 		).Hidden(h.hideExtraLibs),
-
+		// idpxml 选择器
+		compose.FileInput("选择IDP文件", func(v string) {
+			h.idpXml = v
+			app.Log(v)
+		}, "text/xml").Hidden(h.hideIdpxml),
+		// pemCA 选择器
+		compose.FileInput("选择pem CA证书文件", func(v string) {
+			h.idpXml = v
+			app.Log(v)
+		}, "text/xml").Hidden(h.hidePemCA),
 		// 导出按钮（点击时打印所有值）
 		compose.Button("导出", "primary").
 			OnClick(func(ctx app.Context, e app.Event) {
@@ -247,7 +258,7 @@ func App() {
 			extraLibs:            []string{},
 			hideExtraLibs:        false,
 			hideIdpxml:           true,
-			hideCerKey:           true,
+			hidePemCA:            true,
 		}
 	})
 	app.RunWhenOnBrowser()

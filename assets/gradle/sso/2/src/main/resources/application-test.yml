@@ -30,7 +30,7 @@ sensors:
 #
 saml2:
   metadata-url: https://客户域名/saml/metadata.xml          # IDP metadata 路径 # IDP metadata 路径
-  sp-metadata-url: /sensorsdata/main/dingkai/program/{{.ProjectName}}/{{.ModuleName}}/conf/saml/sp_metadata.xml
+  sp-metadata-url: /sensorsdata/main/dingkai/program/dk_sso/sso/conf/saml/sp_metadata.xml
   entityId: 与sp保持一致
   hostname: 客户域名                                              # 请求域名 domain
   protocol: https                                                                        # HTTP Method

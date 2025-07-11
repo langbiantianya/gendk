@@ -4,9 +4,9 @@
 
 1. idp metadata 地址客户提供
 2. entityId 自己编，生成 metadata 提供给客户他们注册
-3. [`sensorsKeystore.jks`](src/main/resources/saml/sensorsKeystore.jks)需要使用jdk生成，然后导入客户给的密钥
+3. [`sensorsKeystore.jks`](src/main/resources/saml/sensorsKeystore.jks)需要使用 jdk 生成，然后导入客户给的密钥
 4. idp_metadata.xml 和 sp_metadata.xml 请放在`resources/saml`下面
-5. 自己在 sp 的 nginx 配置里面加个配置代理 sp
+5. 自己在 sp 的 nginx 配置里面加个配置代理 /sensorsdata/main/program/sp/nginx/conf/web_locations
 
 ```nginx
 location /saml/metadata.xml {
@@ -47,9 +47,19 @@ keytool -list -v -keystore sensorsKeystore.jks -storepass '2wsx#EDC'
 
 ## 部署
 
+### 获取super api-token
+
+#### sfn 全局token
+
+spadmin config get global -n super_api_token
+
+#### sfn 全局token：440以上
+
+aradmin config get global -n super_api_token
+
 ### 部署前配置
 
-#### 配置sa默认登录页面
+#### 配置 sa 默认登录页面
 
 ```shell
 sbpadmin business_config set -p sbp -k front_auto_logout_config -v "{'redirect_type': 'URL','redirect_value' : 'https://客户域名/api/sso/login'}"
@@ -58,7 +68,7 @@ sbpadmin business_config set -p sbp -k front_auto_logout_config -v "{'redirect_t
 #### 配置 userinfo 地址（固定配置，无需修改）
 
 ```shell
-sbpadmin business_config -a set -p sbp -k login_user_info_api -v  "http://127.0.0.1:8112/sso/userinfo"
+sbpadmin business_config -a set -p sbp -k login_user_info_api -v  "http://127.0.0.1:8112/userinfo"
 ```
 
 #### 自动创建账号

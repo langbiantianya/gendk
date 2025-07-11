@@ -1,7 +1,7 @@
 api_version: v1
 kind: dk_product_component
 metadata:
-  name: {{.ProjectName}}
+  name: dk_sso
 spec:
   # 版本是定开产品组件级别的
   version: 2
@@ -40,7 +40,7 @@ spec:
                 retry_times: 3
               # 启动相关配置
               start:
-                cmd: 'sh ${DINGKAI_BASE}/program/{{.ProjectName}}/sso/bin/run.sh'
+                cmd: 'sh ${DINGKAI_BASE}/program/dk_sso/sso/bin/run.sh'
                 retry_interval: 0
                 retry_times: 3
                 timeout: 60
