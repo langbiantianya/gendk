@@ -47,13 +47,13 @@ keytool -list -v -keystore sensorsKeystore.jks -storepass '2wsx#EDC'
 
 ## 部署
 
-### 获取super api-token
+### 获取 super api-token
 
-#### sfn 全局token
+#### sfn 全局 token
 
 spadmin config get global -n super_api_token
 
-#### sfn 全局token：440以上
+#### sfn 全局 token：440 以上
 
 aradmin config get global -n super_api_token
 
@@ -83,6 +83,22 @@ sbpadmin business_config set -p sbp -k enable_oauth_auto_create_user -v true
 
 ```shell
 sbpadmin business_config set -p sbp -k enable_oauth_auto_create_user -v false
+```
+
+#### 自动关联全部项目
+
+##### 开启
+
+```shell
+sbpadmin business_config set -p sbp -k enable_oauth_auto_login_all_projects -v true
+
+```
+
+#### 关闭
+
+```shell
+sbpadmin business_config set -p sbp -k enable_oauth_auto_login_all_projects -v false
+
 ```
 
 ### 首次
