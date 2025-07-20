@@ -12,10 +12,10 @@ import (
 
 func Start(assets embed.FS) {
 	template.SetdistFS(assets)
-	webEnv := os.Getenv("WEB")
-	if webEnv == "" {
-		ui.App()
-	} else {
+	// webEnv := os.Getenv("WEB")
+	// if webEnv == "" {
+	// 	ui.App()
+	// } else {
 		web.App()
-	}
+	// }
 }

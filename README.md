@@ -4,7 +4,7 @@
 
 ## 这个工具能干什么
 
-帮你快速生成定开项目，减少和和 dingkai 工具斗智斗勇调整蓝图的时间。  
+帮你快速生成定开项目，减少和和 dingkai 工具斗智斗勇调整蓝图的时间。
 用该工具生成的 gradle 项目可以放心大胆的不去管 jdk 版本，gradle 会自己处理好 jdk 版本，更可以直接使用 vscode 或者 trea 这些 ide 开箱即用。
 
 ## 如何使用 gitlab 的 ci
@@ -64,27 +64,27 @@ make web
 docker build -t gendk-web .
 ```
 
-### native
+### ~~native~~
 
-#### windows
+#### ~~windows~~
 
 ```shell
 make windows
 ```
 
-#### linux
+#### ~~linux~~
 
 ```shell
 make linux
 ```
 
-#### android
+#### ~~android~~
 
 ```shell
 make android
 ```
 
-#### freebsd
+#### ~~freebsd~~
 
 ```shell
 make freebsd
