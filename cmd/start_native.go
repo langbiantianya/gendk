@@ -5,9 +5,7 @@ package cmd
 import (
 	"embed"
 	"gendk/cmd/template"
-	"gendk/cmd/ui"
 	"gendk/cmd/web"
-	"os"
 )
 
 func Start(assets embed.FS) {
@@ -16,6 +14,6 @@ func Start(assets embed.FS) {
 	// if webEnv == "" {
 	// 	ui.App()
 	// } else {
-		web.App()
+	web.App()
 	// }
 }
