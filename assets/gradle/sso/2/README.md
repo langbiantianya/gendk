@@ -68,7 +68,7 @@ sbpadmin business_config set -p sbp -k front_auto_logout_config -v "{'redirect_t
 #### 配置 userinfo 地址（固定配置，无需修改）
 
 ```shell
-sbpadmin business_config -a set -p sbp -k login_user_info_api -v  "http://127.0.0.1:8112/userinfo"
+sbpadmin business_config -a set -p sbp -k login_user_info_api -v  "http://hybrid01:8112/userinfo"
 ```
 
 #### 自动创建账号
