@@ -112,7 +112,7 @@ func (data WebTemplateData) GenSettingsKts() (string, error) {
 
 func (data WebTemplateData) GenApplication() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/src/main/resources/application.properties", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/src/main/resources/application.yaml", data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}

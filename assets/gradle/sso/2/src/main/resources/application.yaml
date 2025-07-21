@@ -1,3 +1,7 @@
+application:
+  title: dk_sso
+  version: 1.0
+  description: 定开saml单点登入
 server:
   port: 8112                       # 单点登录服务端口
   tomcat:
