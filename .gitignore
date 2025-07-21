@@ -25,3 +25,9 @@ go.work
 fyne-cross/
 out/
 fyne_metadata_init.go
+
+# goland
+.idea
+
+#dingkai
+!sso/bin/
