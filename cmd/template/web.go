@@ -233,7 +233,7 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "application.properties") {
+		} else if strings.Contains(relPath, "application.yaml") {
 			strData, err := data.GenApplication()
 			if err != nil {
 				return err
