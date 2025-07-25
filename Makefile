@@ -13,3 +13,5 @@ web_cp:
 	mv *.css out
 	mv *.webmanifest out
 	cp web/* out/web
+
+web:web_build web_run
