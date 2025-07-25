@@ -38,16 +38,14 @@ product/deliver.yml@general-utilities/share-cicd
 
 ```shell
 $ENV:BUILD=1
-$ENV:WEB=1
-make web
+make
 ```
 
 ### bash | zsh
 
 ```shell
 export BUILD=1
-export WEB=1
-make web
+make
 ```
 
 ### docker-web
