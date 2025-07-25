@@ -26,17 +26,9 @@ product/deliver.yml@general-utilities/share-cicd
 - golang 1.23.5+
 - make
 
-#### linux
-
-以 debian12 为例必须以下依赖
-
-- libgl1-mesa-dev
-- xorg-dev
-- mesa-utils
-
 ### 可选依赖
 
-仅 native 与 docker web 需要
+仅 docker web 需要
 
 - docker
 
@@ -62,30 +54,4 @@ make web
 
 ```shell
 docker build -t gendk-web .
-```
-
-### ~~native~~
-
-#### ~~windows~~
-
-```shell
-make windows
-```
-
-#### ~~linux~~
-
-```shell
-make linux
-```
-
-#### ~~android~~
-
-```shell
-make android
-```
-
-#### ~~freebsd~~
-
-```shell
-make freebsd
 ```

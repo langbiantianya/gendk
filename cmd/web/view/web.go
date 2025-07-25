@@ -21,20 +21,40 @@ type Web struct {
 func NewWeb() GenView {
 	return &Web{
 		jdkVersion:           "JDK 1.8",
+		springBootVersion:    2,
 		hideSelectSpringBoot: true,
 		buildTool:            "Gradle",
 	}
 }
 
-func (w *Web) View() app.UI {
-	return app.Div().Class().Body(
+func (w *Web) View() app.HTMLDiv {
+	springBootVersionSelect := compose.Select(
+		[]string{"Spring Boot 2", "Spring Boot 3"},
+		func() string {
+			return fmt.Sprintf("Spring Boot %d", w.springBootVersion)
+		}(),
+		true,
+		"Spring Boot版本",
+		func(v string) {
+			app.Log(v)
+			switch v {
+			case "Spring Boot 2":
+				w.springBootVersion = 2
+			case "Spring Boot 3":
+				w.springBootVersion = 3
+			}
+		},
+	).Style("display", "none")
+	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
 		compose.Input("项目名称", w.projectName, func(v string) {
 			w.projectName = v
+			app.Log(w.projectName)
 		}),
 		// 模块名称输入框（绑定moduleName）
 		compose.Input("模块名称", w.moduleName, func(v string) {
 			w.moduleName = v
+			app.Log(w.moduleName)
 		}),
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
@@ -48,9 +68,14 @@ func (w *Web) View() app.UI {
 				w.hideSelectSpringBoot = w.jdkVersion == "JDK 1.8"
 				if w.hideSelectSpringBoot {
 					w.springBootVersion = 2
+					springBootVersionSelect.JSValue().Get("style").Set("display", "none")
+				} else {
+					springBootVersionSelect.JSValue().Get("style").Set("display", "block")
 				}
 			},
 		),
+		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
+		springBootVersionSelect,
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
 			[]string{"Gradle"},
@@ -82,16 +107,18 @@ func (w *Web) View() app.UI {
 	)
 }
 
-func (w *Web) GenZip() ([]byte, error) {
+func (w *Web) GenZip() ([]byte, string, error) {
+	app.Log(w)
 	if w.projectName == "" {
-		return nil, fmt.Errorf("请输入项目名")
+		return nil, "", fmt.Errorf("请输入项目名")
 	}
 
 	if w.moduleName == "" {
-		return nil, fmt.Errorf("请输入模块名")
+		return nil, "", fmt.Errorf("请输入模块名")
 	}
 
 	libStr := template.GenGradleLibStr(w.jdkVersion, w.extraLibs)
 	data := template.NewWebTemplateData(w.springBootVersion, libStr, w.projectName, w.moduleName, w.jdkVersion)
-	return data.GenZip()
+	bytes, err := data.GenZip()
+	return bytes, w.projectName + ".zip", err
 }

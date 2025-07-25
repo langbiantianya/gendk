@@ -29,10 +29,29 @@ func NewSso() GenView {
 		springBootVersion:    2,
 		hideSelectSpringBoot: true,
 		buildTool:            "Gradle",
+		ssoProtocol:          "SAML",
 	}
 }
-func (s *Sso) View() app.UI {
-	return app.Div().Class().Body(
+func (s *Sso) View() app.HTMLDiv {
+	springBootVersionSelect := compose.Select(
+		[]string{"Spring Boot 2", "Spring Boot 3"},
+		func() string {
+			return fmt.Sprintf("Spring Boot %d", s.springBootVersion)
+		}(),
+		true,
+		"Spring Boot版本",
+		func(v string) {
+			app.Log(v)
+			switch v {
+			case "Spring Boot 2":
+				s.springBootVersion = 2
+			case "Spring Boot 3":
+				s.springBootVersion = 3
+			}
+		},
+	).Hidden(s.hideSelectSpringBoot)
+
+	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
 		compose.Input("项目名称", s.projectName, func(v string) {
 			s.projectName = v
@@ -49,23 +68,7 @@ func (s *Sso) View() app.UI {
 			},
 		),
 		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
-		compose.Select(
-			[]string{"Spring Boot 2", "Spring Boot 3"},
-			func() string {
-				return fmt.Sprintf("Spring Boot %d", s.springBootVersion)
-			}(),
-			true,
-			"Spring Boot版本",
-			func(v string) {
-				app.Log(v)
-				switch v {
-				case "Spring Boot 2":
-					s.springBootVersion = 2
-				case "Spring Boot 3":
-					s.springBootVersion = 3
-				}
-			},
-		).Hidden(s.hideSelectSpringBoot),
+		springBootVersionSelect,
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
 			[]string{"Gradle"},
@@ -111,11 +114,11 @@ func (s *Sso) View() app.UI {
 	)
 }
 
-func (s *Sso) GenZip() ([]byte, error) {
+func (s *Sso) GenZip() ([]byte, string, error) {
 	if s.projectName == "" {
-		return nil, fmt.Errorf("请输入项目名")
+		return nil, "", fmt.Errorf("请输入项目名")
 	}
 	data := template.NewSSOTemplateData(s.springBootVersion, s.projectName, s.jdkVersion, s.idpXml, s.pemCA, s.entityID, s.endpoint, s.logoutEndpoint)
-
-	return data.GenZip()
+	byte, err := data.GenZip()
+	return byte, s.projectName + ".zip", err
 }
