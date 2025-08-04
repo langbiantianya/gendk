@@ -9,27 +9,25 @@ import (
 )
 
 type Sso struct {
-	projectName          string // 项目名称
-	jdkVersion           string // JDK版本
-	springBootVersion    int    // Spring Boot版本（JDK 17时可选）
-	hideSelectSpringBoot bool
-	buildTool            string // 构建工具
-	hideSelectBuildTool  bool
-	ssoProtocol          string // 单点登入协议类型
-	idpXml               string // IDP配置文件
-	pemCA                string // PEM CA证书
-	entityID             string // Entity ID
-	endpoint             string // login Endpoint
-	logoutEndpoint       string // logout Endpoint
+	projectName       string // 项目名称
+	jdkVersion        string // JDK版本
+	springBootVersion int    // Spring Boot版本（JDK 17时可选）
+	buildTool         string // 构建工具
+	ssoProtocol       string // 单点登入协议类型
+	idpXml            string // IDP配置文件
+	pemCA             string // PEM CA证书
+	entityID          string // Entity ID
+	endpoint          string // login Endpoint
+	logoutEndpoint    string // logout Endpoint
+	redirect          string //重定向地址
 }
 
 func NewSso() GenView {
 	return &Sso{
-		jdkVersion:           "JDK 1.8",
-		springBootVersion:    2,
-		hideSelectSpringBoot: true,
-		buildTool:            "Gradle",
-		ssoProtocol:          "SAML",
+		jdkVersion:        "JDK 1.8",
+		springBootVersion: 2,
+		buildTool:         "Gradle",
+		ssoProtocol:       "SAML",
 	}
 }
 func (s *Sso) View() app.HTMLDiv {
@@ -49,7 +47,46 @@ func (s *Sso) View() app.HTMLDiv {
 				s.springBootVersion = 3
 			}
 		},
-	).Hidden(s.hideSelectSpringBoot)
+	).Style("display", "none")
+	jdkVersionSelect := compose.Select(
+		[]string{"JDK 1.8", "JDK 17"},
+		s.jdkVersion,
+		true,
+		"请选择JDK版本",
+		func(v string) {
+			app.Log(v)
+			s.jdkVersion = v
+		},
+	)
+	buildTools := compose.Select(
+		[]string{"Gradle"},
+		s.buildTool,
+		true,
+		"请选择构建工具",
+		func(v string) {
+			s.buildTool = v
+		},
+	)
+	entityIDInput := compose.Input("请输入entityID", s.entityID, func(v string) {
+		s.entityID = v
+	})
+	endpointInput := compose.Input("请输入endpoint", s.endpoint, func(v string) {
+		s.endpoint = v
+	})
+	logoutEndpointInput := compose.Input("请输入logoutEndpoint", s.logoutEndpoint, func(v string) {
+		s.logoutEndpoint = v
+	})
+	idpxmlInput := compose.FileInput("选择IDP文件", func(v string) {
+		s.idpXml = v
+		app.Log(v)
+	}, "text/xml")
+	pemCAInput := compose.FileInput("选择pem CA证书文件", func(v string) {
+		s.pemCA = v
+		app.Log(v)
+	}, "application/x-x509-ca-cert")
+	redirectInput := compose.Input("请输入重定向接口uri", s.logoutEndpoint, func(v string) {
+		s.redirect = v
+	}).Style("display", "none")
 
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
@@ -57,60 +94,52 @@ func (s *Sso) View() app.HTMLDiv {
 			s.projectName = v
 		}),
 		// JDK版本单选（绑定jdkVersion）
-		compose.Select(
-			[]string{"JDK 1.8", "JDK 17"},
-			s.jdkVersion,
-			true,
-			"请选择JDK版本",
-			func(v string) {
-				app.Log(v)
-				s.jdkVersion = v
-			},
-		),
+		jdkVersionSelect,
 		// Spring Boot版本单选（绑定springBootVersion），仅在 JDK 17 时显示
 		springBootVersionSelect,
 		// 构建工具单选（绑定buildTool）
-		compose.Select(
-			[]string{"Gradle"},
-			s.buildTool,
-			true,
-			"请选择构建工具",
-			func(v string) {
-				s.buildTool = v
-			},
-		).Hidden(s.hideSelectBuildTool),
+		buildTools,
 		// 单点登入协议类型选择（绑定ssoProtocol）
 		compose.Select(
-			[]string{"SAML"},
+			[]string{"SAML", "token重定向"},
 			s.ssoProtocol,
 			true,
 			"请选择单点登入协议类型",
 			func(v string) {
+				switch v {
+				case "SAML":
+					redirectInput.JSValue().Get("style").Set("display", "none")
+					jdkVersionSelect.JSValue().Get("style").Set("display", "inline")
+					buildTools.JSValue().Get("style").Set("display", "inline")
+					entityIDInput.JSValue().Get("style").Set("display", "inline")
+					endpointInput.JSValue().Get("style").Set("display", "inline")
+					logoutEndpointInput.JSValue().Get("style").Set("display", "inline")
+					idpxmlInput.JSValue().Get("style").Set("display", "inline")
+					pemCAInput.JSValue().Get("style").Set("display", "inline")
+				case "token重定向":
+					redirectInput.JSValue().Get("style").Set("display", "inline")
+					jdkVersionSelect.JSValue().Get("style").Set("display", "none")
+					buildTools.JSValue().Get("style").Set("display", "none")
+					entityIDInput.JSValue().Get("style").Set("display", "none")
+					endpointInput.JSValue().Get("style").Set("display", "none")
+					logoutEndpointInput.JSValue().Get("style").Set("display", "none")
+					idpxmlInput.JSValue().Get("style").Set("display", "none")
+					pemCAInput.JSValue().Get("style").Set("display", "none")
+				}
 				s.ssoProtocol = v
 			},
 		),
 		// entityID
-		compose.Input("请输入entityID", s.entityID, func(v string) {
-			s.entityID = v
-		}),
+		entityIDInput,
 		// endpoint
-		compose.Input("请输入endpoint", s.endpoint, func(v string) {
-			s.endpoint = v
-		}),
+		endpointInput,
 		// logoutEndpoint
-		compose.Input("请输入logoutEndpoint", s.logoutEndpoint, func(v string) {
-			s.logoutEndpoint = v
-		}),
+		logoutEndpointInput,
 		// idpxml 选择器
-		compose.FileInput("选择IDP文件", func(v string) {
-			s.idpXml = v
-			app.Log(v)
-		}, "text/xml"),
+		idpxmlInput,
 		// pemCA 选择器
-		compose.FileInput("选择pem CA证书文件", func(v string) {
-			s.pemCA = v
-			app.Log(v)
-		}, "application/x-x509-ca-cert"),
+		pemCAInput,
+		redirectInput,
 	)
 }
 
@@ -118,7 +147,15 @@ func (s *Sso) GenZip() ([]byte, string, error) {
 	if s.projectName == "" {
 		return nil, "", fmt.Errorf("请输入项目名")
 	}
-	data := template.NewSSOTemplateData(s.springBootVersion, s.projectName, s.jdkVersion, s.idpXml, s.pemCA, s.entityID, s.endpoint, s.logoutEndpoint)
+	var data template.TemplateData
+
+	switch s.ssoProtocol {
+	case "SAML":
+		data = template.NewSSOTemplateData(s.springBootVersion, s.projectName, s.jdkVersion, s.idpXml, s.pemCA, s.entityID, s.endpoint, s.logoutEndpoint)
+	case "token重定向":
+		data = template.NewSSoNginxTemplateData(s.projectName, s.redirect)
+	}
+
 	byte, err := data.GenZip()
 	return byte, s.projectName + ".zip", err
 }
