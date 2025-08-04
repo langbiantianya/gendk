@@ -23,14 +23,20 @@ func (h *home) Render() app.UI {
 	webView := view.NewWeb()
 	ssoView := view.NewSso()
 	var selectView view.GenView = webView
-	return app.Div().Class("bg-[url(/web/683017.jpg)]", "w-full", "bg-no-repeat", "w-full", "h-screen", "bg-scroll", "bg-center", "bg-cover", "flex", "justify-center", "items-center").Body(
-		app.Div().Class(
-			"max-w-md", "mx-auto", "p-6", "backdrop-blur-md", "rounded-lg", "shadow-md", "flex", "flex-col", "gap-y-4", "bg-white/30",
-		).Body(
-			app.H1().Class(
-				"text-2xl", "font-bold", "text-gray-800", "text-center", // 添加 text-center 类
-			).Text("定开项目生成器"),
 
+	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-local", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "justify-between", "items-center", "flex-col").Body(
+		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mb-4", "px-2", "leading-12", "h-12", "flex", "justify-between", "items-center").Body(
+			app.Span().Style("line-height", "3rem").Class(
+				"text-2xl", "font-bold", "text-gray-800", "h-12", "inline",
+			).Text("定开项目生成器"),
+			app.Span().Style("line-height", "3rem").Class().Body(
+				app.A().Class().Href("https://github.com/langbiantianya/gendk/issues").Body(app.Img().Src("/web/issues.svg").Alt("issues").Class("h-8", "inline")),
+				app.A().Class().Href("https://github.com/langbiantianya/gendk").Body(app.Img().Src("/web/github.svg").Alt("github").Class("h-8", "inline")),
+			),
+		),
+		app.Div().Class(
+			"max-w-md", "mx-auto", "p-6", "backdrop-blur-md", "rounded-sm", "shadow-md", "flex", "flex-col", "gap-y-4", "bg-white/30",
+		).Body(
 			// 项目类型选择（绑定projectType）
 			compose.Select(
 				[]string{"Web", "SSO"},
@@ -62,6 +68,20 @@ func (h *home) Render() app.UI {
 					}
 					template.SaveZipDataLocally(ctx, e, zipData, fileName)
 				}),
+		),
+		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mt-4", "px-2").Body(
+			app.P().Class("text-right", "text-sm/8").ID("hitokoto").Body(
+				app.A().Href("#").ID("hitokoto_text").Text(":D 获取中..."),
+				app.Script().Text(`fetch('https://v1.hitokoto.cn?c=a&c=b&c=c&c=d&c=h&c=i&c=j')
+  .then(response => response.json())
+  .then(data => {
+    const hitokoto = document.querySelector('#hitokoto_text')
+    hitokoto.href = 'https://hitokoto.cn/?uuid='+data.uuid
+    hitokoto.innerText = "『" + data.hitokoto+"』\t\t————\t\t"+data.from
+    data.from_who && (hitokoto.innerText += "\t「"+ data.from_who + "」")
+  })
+  .catch(console.error)`),
+			),
 		),
 	)
 
