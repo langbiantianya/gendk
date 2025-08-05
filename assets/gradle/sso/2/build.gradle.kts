@@ -16,23 +16,23 @@ java {
 }
 
 dependencies {
-    implementation("com.sensorsdata.analytics.sso:ssocommon:2.1.1") {
-        exclude(group = "org.springframework", module = "spring-web")
-        exclude(group = "org.springframework", module = "spring-webmvc")
-//        exclude(group = "com.hazelcast", module = "hazelcast")
-    }
-    implementation("com.hazelcast:hazelcast:3.12.12")
-//    implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
-//    implementation("com.mysql:mysql-connector-j:8.2.0")
+    implementation("com.sensorsdata.analytics.sso:ssocommon:2.1.2")
+    implementation("commons-collections:commons-collections:3.2.2")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-//    implementation("com.sensorsdata.airline:guidance-dingkai-mysql:1.0.1-SNAPSHOT")
     compileOnly("org.projectlombok:lombok:1.18.16")
     annotationProcessor("org.projectlombok:lombok:1.18.16")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.security:spring-security-saml2-service-provider")
+    implementation("org.springframework.security:spring-security-saml2-service-provider:5.7.14")
+    implementation("org.springframework.security:spring-security-core:5.7.14")
+    implementation("org.springframework.security:spring-security-crypto:5.7.14")
+    implementation("org.springframework.security:spring-security-config:5.7.14")
+    implementation("org.springframework.security:spring-security-web:5.7.14")
+    implementation("org.yaml:snakeyaml:1.33")
+    implementation("org.apache.santuario:xmlsec:2.1.7")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.security:spring-security-test:5.7.14")
     developmentOnly("org.springframework.boot:spring-boot-starter-actuator")
 
 }
@@ -137,4 +137,3 @@ tasks.getByName<Jar>("jar") {
     )
 
 }
-

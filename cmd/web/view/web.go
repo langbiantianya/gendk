@@ -70,7 +70,7 @@ func (w *Web) View() app.HTMLDiv {
 					w.springBootVersion = 2
 					springBootVersionSelect.JSValue().Get("style").Set("display", "none")
 				} else {
-					springBootVersionSelect.JSValue().Get("style").Set("display", "block")
+					springBootVersionSelect.JSValue().Get("style").Set("display", "inline")
 				}
 			},
 		),

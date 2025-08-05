@@ -22,27 +22,27 @@ type SSOTemplateData struct {
 	RegistrationId    string
 }
 
-func NewSSOTemplateData(SpringBootVersion int, ProjectName, JdkVersion, idpXml, pemCA, entityID, endpoint, logoutEndpoint string) SSOTemplateData {
+func NewSSOTemplateData(springBootVersion int, projectName, jdkVersion, idpXml, pemCA, entityID, endpoint, logoutEndpoint string) SSOTemplateData {
 	// 生成sp
 	sp := utils.GenerateEntityDescriptor(pemCA, entityID, endpoint, logoutEndpoint)
 	spStr, _ := utils.EntityDescriptorToXML(sp)
 	registrationId, _ := utils.GetLastPathSegment(endpoint)
 	var JdkVersionNumber int
-	switch JdkVersion {
+	switch jdkVersion {
 	case "JDK 1.8":
-		JdkVersion = "VERSION_1_8"
+		jdkVersion = "VERSION_1_8"
 		JdkVersionNumber = 8
 	case "JDK 17":
-		JdkVersion = "VERSION_17"
+		jdkVersion = "VERSION_17"
 		JdkVersionNumber = 17
 	default:
-		JdkVersion = "VERSION_1_8"
+		jdkVersion = "VERSION_1_8"
 		JdkVersionNumber = 8
 	}
 	return SSOTemplateData{
-		SpringBootVersion,
-		ProjectName,
-		JdkVersion,
+		springBootVersion,
+		projectName,
+		jdkVersion,
 		JdkVersionNumber,
 		idpXml,
 		spStr,
