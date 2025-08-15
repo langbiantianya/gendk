@@ -1,6 +1,10 @@
 package compose
 
-import "github.com/maxence-charriere/go-app/v10/pkg/app"
+import (
+	"slices"
+
+	"github.com/maxence-charriere/go-app/v10/pkg/app"
+)
 
 // Checkbox semi-ui风格复选框（Tailwind版）
 // label: 复选框标签文本
@@ -58,12 +62,7 @@ func CheckboxGroup(label string, options []string, selected []string, onChange f
 		// 创建循环变量的副本（避免闭包捕获循环变量）
 		currentVal := label
 		checked := false
-		for _, s := range selected {
-			if s == currentVal {
-				checked = true
-				break
-			}
-		}
+		checked = slices.Contains(selected, currentVal)
 		// 单个复选框项
 		checkboxItem := Checkbox(currentVal, checked, func(b bool, s string) {
 			if b {
