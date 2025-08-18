@@ -16,14 +16,18 @@ type Web struct {
 	hideSelectSpringBoot bool
 	buildTool            string   // 构建工具
 	extraLibs            []string // 额外依赖
+	enableNginx          string   //是否启用nginx
 }
 
 func NewWeb() GenView {
 	return &Web{
+		projectName:          "dk_demo",
+		moduleName:           "demo",
 		jdkVersion:           "JDK 1.8",
 		springBootVersion:    2,
 		hideSelectSpringBoot: true,
 		buildTool:            "Gradle",
+		enableNginx:          "否",
 	}
 }
 
@@ -86,6 +90,16 @@ func (w *Web) View() app.HTMLDiv {
 				w.buildTool = v
 			},
 		),
+		// 是否启用nginx
+		compose.Select(
+			[]string{"是", "否"},
+			w.enableNginx,
+			true,
+			"是否启用nginx渲染模板",
+			func(v string) {
+				w.enableNginx = v
+			},
+		),
 		// 额外依赖多选（绑定extraLibs）
 		compose.CheckboxGroup(
 			"额外依赖",
@@ -118,7 +132,7 @@ func (w *Web) GenZip() ([]byte, string, error) {
 	}
 
 	libStr := template.GenGradleLibStr(w.jdkVersion, w.extraLibs)
-	data := template.NewWebTemplateData(w.springBootVersion, libStr, w.projectName, w.moduleName, w.jdkVersion)
+	data := template.NewWebTemplateData(w.springBootVersion, libStr, w.projectName, w.moduleName, w.jdkVersion, w.enableNginx == "是")
 	bytes, err := data.GenZip()
 	return bytes, w.projectName + ".zip", err
 }

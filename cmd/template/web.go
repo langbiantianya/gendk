@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
+	"log"
 	"strings"
 	"text/template"
 )
@@ -16,34 +17,37 @@ type WebTemplateData struct {
 	ModuleName        string
 	JdkVersion        string
 	JdkVersionNumber  int
+	EnableNginx       bool
 }
 
 func NewWebTemplateData(
-	SpringBootVersion int,
-	Libs string,
-	ProjectName string,
-	ModuleName string,
-	JdkVersion string) WebTemplateData {
+	springBootVersion int,
+	libs string,
+	projectName string,
+	moduleName string,
+	jdkVersion string,
+	enableNginx bool) WebTemplateData {
 	var JdkVersionNumber int
-	switch JdkVersion {
+	switch jdkVersion {
 	case "JDK 1.8":
-		JdkVersion = "VERSION_1_8"
+		jdkVersion = "VERSION_1_8"
 		JdkVersionNumber = 8
 	case "JDK 17":
-		JdkVersion = "VERSION_17"
+		jdkVersion = "VERSION_17"
 		JdkVersionNumber = 17
 	default:
-		JdkVersion = "VERSION_1_8"
+		jdkVersion = "VERSION_1_8"
 		JdkVersionNumber = 8
 	}
 
 	return WebTemplateData{
-		SpringBootVersion,
-		Libs,
-		ProjectName,
-		ModuleName,
-		JdkVersion,
+		springBootVersion,
+		libs,
+		projectName,
+		moduleName,
+		jdkVersion,
 		JdkVersionNumber,
+		enableNginx,
 	}
 
 }
@@ -188,6 +192,46 @@ func (data WebTemplateData) GenBlueprint() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
+func (data WebTemplateData) GenNginxBackendJ2() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-api-backend-conf.j2", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("dingkai_ProjectName-api-backend-conf").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
+func (data WebTemplateData) GenNginxJ2() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-nginx-conf.j2", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("dingkai_ProjectName-nginx-conf").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
 func (data WebTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
@@ -219,6 +263,7 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 			}
 			return nil
 		}
+
 		// 判断文件是否需要替换
 		var fileData []byte
 		if strings.Contains(relPath, "build.gradle.kts") {
@@ -263,6 +308,34 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "blueprint_2_1/data/template/nginx") {
+			// 判断是否跳过nginx文件的生成
+			if data.EnableNginx {
+				if strings.Contains(relPath, "dingkai_ProjectName-api-backend-conf.j2") {
+					strData, err := data.GenNginxBackendJ2()
+					if err != nil {
+						return err
+					}
+					fileData = []byte(strData)
+				} else if strings.Contains(relPath, "dingkai_ProjectName-nginx-conf.j2") {
+					strData, err := data.GenNginxJ2()
+					if err != nil {
+						return err
+					}
+					fileData = []byte(strData)
+				} else {
+					// 读取文件内容
+					fileDataS, err := distFS.ReadFile(path)
+					if err != nil {
+						return err
+					}
+					fileData = fileDataS
+				}
+				relPath = strings.ReplaceAll(relPath, "ProjectName", data.ProjectName)
+				log.Default().Println(relPath)
+			} else {
+				return nil
+			}
 		} else {
 			// 读取文件内容
 			fileDataS, err := distFS.ReadFile(path)
