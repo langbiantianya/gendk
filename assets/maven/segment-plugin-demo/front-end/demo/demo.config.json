@@ -1,0 +1,18 @@
+[
+  {
+    "URI": "jfrog://@sdh-module/entity-segment@^1.17.1-test-plugin",
+    "depends": [],
+    "path": "http://127.0.0.1:8042/_sdh_module_entity_segment/module._sdh_module_entity_segment.js",
+    "route": "/horizon/entity-segment",
+    "name": "@sdh-module/entity-segment"
+  },
+  {
+    "URI": "src://",
+    "depends": [
+      "@sdh-module/entity-segment"
+    ],
+    "type": "extension",
+    "name": "segment_push_plugin_demo",
+    "path": "http://127.0.0.1:8041/extension.segment_push_plugin_demo.js"
+  }
+]

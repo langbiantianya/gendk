@@ -1,0 +1,27 @@
+# 插件显示名
+name: {{.PluginName}}
+# 插件的唯一标志
+plugin_id: {{.ProjectName}}
+# 插件版本
+version: 1.0.0
+# 描述信息
+description: 分群推送demo
+# 插件需要被安装到的应用信息
+target_application:
+  # 插件是和应用绑定的，而不是产品组件
+  application_name: horizon-segment
+  # 需要应用的最小版本，必须大于等于此版本才能安装，一般应该是一个二位版本0`
+  min_version: 0.1.4
+  # 需要应用的最大版本，必须小于此版本才能安装，一般应该是一个二位版本
+  max_version: 0.2.0
+# 插件包含的所有扩展点的定义
+extension_points:
+  - id: segment-plugin-demo-extension
+    class_name: com.sensorsdata.horizon.segment.plugin.demo.SegmentPluginDemoPlugin
+ext_config:
+  front_end:
+    # 当前插件的前端资源访问入口
+    entry: '/api/v3/horizon/v1/web/segment_notify/resource/segment-push-plugin-demo/front_end_resource/extension.segment_push_plugin_demo.js'
+    # 当前插件实现了哪些前端扩展点
+    extensionPointIds:
+      - sdh.pushSetting.Channel

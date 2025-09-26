@@ -1,0 +1,20 @@
+stages:
+  - test
+  - release
+
+test:
+  stage: test
+  only:
+    - /^test\/.*$/
+  script:
+    - yarn install --frozen-lockfile
+    - npm run publish:test
+
+release:
+  stage: release 
+  only:
+    - tags
+  script:
+    - yarn install --frozen-lockfile
+    - npm run build
+    - npm run publish
