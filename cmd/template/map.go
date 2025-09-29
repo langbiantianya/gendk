@@ -1,7 +1,7 @@
 package template
 
 var LibsGradleMapJDK8 = map[string]string{
-	"Hutool All":                           "cn.hutool:hutool-all:5.8.38",
+	"Hutool All":                           "cn.hutool:hutool-all:5.8.40",
 	"Apache Commons IO":                    "commons-io:commons-io:2.20.0",
 	"Apache Commons Lang":                  "org.apache.commons:commons-lang3:3.19.0",
 	"Apache Commons Codec":                 "commons-codec:commons-codec:1.19.0",
@@ -19,7 +19,7 @@ var LibsGradleMapJDK8 = map[string]string{
 }
 
 var LibsGradleMapJDK17 = map[string]string{
-	"Hutool All":                           "cn.hutool:hutool-all:5.8.38",
+	"Hutool All":                           "cn.hutool:hutool-all:5.8.40",
 	"Apache Commons IO":                    "commons-io:commons-io:2.20.0",
 	"Apache Commons Lang":                  "org.apache.commons:commons-lang3:3.19.0",
 	"Apache Commons Codec":                 "commons-codec:commons-codec:1.19.0",

@@ -1,0 +1,11 @@
+# TODO 按需开启多节点
+upstream {{.ModuleName}}_api {
+    #测试环境
+    #server hybrid01:{{ "{{port}}" }};
+    #server hybrid02:{{ "{{port}}" }};
+    #server hybrid03:{{ "{{port}}" }};
+    #生产环境
+    server data01:{{ "{{port}}" }};
+    #server data02:{{ "{{port}}" }};
+    #server data03:{{ "{{port}}" }};
+}

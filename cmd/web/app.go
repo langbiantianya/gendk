@@ -26,7 +26,7 @@ func (h *home) Render() app.UI {
 	segmentView := view.NewSegment()
 	var selectView view.GenView = webView
 
-	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-local", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "justify-between", "items-center", "flex-col").Body(
+	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-fixed", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "justify-between", "items-center", "flex-col").Body(
 		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mb-4", "px-2", "leading-12", "h-12", "flex", "justify-between", "items-center").Body(
 			app.Span().Style("line-height", "3rem").Class(
 				"text-2xl", "font-bold", "text-gray-800", "h-12", "inline",

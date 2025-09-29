@@ -1,0 +1,51 @@
+api_version: v1
+kind: dk_product_component
+metadata:
+  name: {{.ProjectName}}
+spec:
+  # 版本是定开产品组件级别的
+  version: 1.0
+  # 产品组件包括的所有模块
+  dk_modules:
+    {{.ModuleName}}:
+      simple_module: False  # 表示定开模块，否则是定开精简制品
+      dk_roles: # 依次列出所有角色的声明信息，支持多个角色
+        {{.ModuleName}}: # 第一个角色名
+          strategy:
+            resources:
+              # 平台资源引用申请，申请了的资源才有访问权限
+              platform_resources:
+            service:
+              # 系统资源申请，影响调度策略
+              # 定义为需要保证服务启动的最小资源
+              # 定义为针对服务的最大资源限制
+              # https://doc.sensorsdata.cn/pages/viewpage.action?pageId=231162064
+              sys_resources:
+                mem:
+                  limit: "512Mi"
+                  request: "256Mi"
+              # 直接指定部署的机器 fqdn
+              assign_to: {{"{{hosts}}"}}
+              # 是否自动恢复
+              repairable: true
+              # 探活相关配置
+              liveness_probe:
+                method:
+                  port:
+                    process_keyword: '{{.ModuleName}}_server'  # 进程关键字
+                    port: 9783
+                period: 60 # 探活间隔
+                retry_interval: 0
+                timeout: 10
+                retry_times: 3
+              # 启动相关配置
+              start:
+                cmd: 'sh ${DINGKAI_BASE}/program/{{.ProjectName}}/{{.ModuleName}}/bin/run.sh'
+                retry_interval: 0
+                retry_times: 3
+                timeout: 60
+              # 停角色相关配置
+              stop:
+                retry_interval: 0
+                retry_times: 3
+                timeout: 60

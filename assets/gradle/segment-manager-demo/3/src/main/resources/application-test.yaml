@@ -1,0 +1,24 @@
+server:
+  port: 9730                       # 单点登录服务端口
+
+system:
+  request:
+    super_token:
+    domain:
+    api_key:
+    org_id:
+  profile:
+    batch-size: 10000
+    operation-code: "98206"
+    user-filed: "identity_user_id"
+
+feishu:
+  webhookUrl:
+  msg_type:
+  secret:
+  card:
+    type:
+    template_id:
+    template_version_name:
+clickhouse:
+  jdbc-url: r2dbc:clickhouse:http://{username}:{password}@{host}:{port}/{database}
