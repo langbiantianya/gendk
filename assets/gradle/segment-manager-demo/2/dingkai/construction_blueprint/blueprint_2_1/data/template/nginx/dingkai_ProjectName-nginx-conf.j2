@@ -1,0 +1,11 @@
+# TODO 看情况修改
+location ^~ /api/{{.ModuleName}} {
+  # ip 透传
+  proxy_set_header X-Real-Ip $clientRealIp;
+  # 请求 host 透传
+  proxy_set_header Host $http_host;
+  # 重定向到单点登录服务
+  proxy_pass http://segment_push_shulex_api/api/segment_shulex;
+  # 设置超时时间，避免处理时间过长ng出现504超时
+  proxy_read_timeout 3600;
+}

@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: {{.ModuleName}}
+    version: 1.0
+    description: 定开分群推送服务模块
+server:
+  port: 9783
