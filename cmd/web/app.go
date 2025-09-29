@@ -100,6 +100,7 @@ func App() {
 			projectType: "Web",
 			hideSso:     true,
 			hideWeb:     false,
+			hideSegment: true,
 		}
 	})
 	app.RunWhenOnBrowser()

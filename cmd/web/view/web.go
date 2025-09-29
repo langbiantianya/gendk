@@ -21,8 +21,8 @@ type Web struct {
 
 func NewWeb() GenView {
 	return &Web{
-		projectName:          "dk_demo",
-		moduleName:           "demo",
+		projectName:          "",
+		moduleName:           "",
 		jdkVersion:           "JDK 1.8",
 		springBootVersion:    2,
 		hideSelectSpringBoot: true,
@@ -51,12 +51,12 @@ func (w *Web) View() app.HTMLDiv {
 	).Style("display", "none")
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
-		compose.Input("项目名称", w.projectName, func(v string) {
+		compose.Input("项目名称：dk_demo", w.projectName, func(v string) {
 			w.projectName = v
 			app.Log(w.projectName)
 		}),
 		// 模块名称输入框（绑定moduleName）
-		compose.Input("模块名称", w.moduleName, func(v string) {
+		compose.Input("模块名称：demo", w.moduleName, func(v string) {
 			w.moduleName = v
 			app.Log(w.moduleName)
 		}),
