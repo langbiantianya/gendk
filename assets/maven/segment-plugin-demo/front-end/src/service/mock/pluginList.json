@@ -1,0 +1,30 @@
+[
+    {
+        "pluginId": "segment-push-plugin-demo",
+        "channelName": "jiguang-notify-plugin",
+        "channelDisplayName": "极光推送",
+        "frontConfig": "{\"front_end\":{\"entry\":\"/api/v3/horizon/v1/web/segment_notify/resource/segment-push-plugin-demo/front_end_resource/extension.horizon_segment_internal_plugin.js\",\"extensionPointIds\":[\"sdh.pushSetting.Channel\"]}}",
+        "channelConfig": "{\"app_key\": \"2d7de8f4a4bf8684f0fac832\", \"app_secret_key\": \"88050d8bea5f389198d8b513\", \"attribute_paths\": [\"user.name\"] }"
+    },
+    {
+        "pluginId": "segment-push-plugin-demo",
+        "channelName": "xiaomi-notify-plugin",
+        "channelDisplayName": "小米推送",
+        "frontConfig": "{\"front_end\":{\"entry\":\"/api/v3/horizon/v1/web/segment_notify/resource/segment-push-plugin-demo/front_end_resource/extension.horizon_segment_internal_plugin.js\",\"extensionPointIds\":[\"sdh.pushSetting.Channel\"]}}",
+        "channelConfig": "{\"app_secret_key\": \"fadsfdfadf\", \"attribute_paths\": [\"store.store_city\"] }"
+    },
+    {
+        "pluginId": "segment-push-plugin-demo",
+        "channelName": "getui-notify-plugin",
+        "channelDisplayName": "个推推送",
+        "frontConfig": "{\"front_end\":{\"entry\":\"/api/v3/horizon/v1/web/segment_notify/resource/segment-push-plugin-demo/front_end_resource/extension.horizon_segment_internal_plugin.js\",\"extensionPointIds\":[\"sdh.pushSetting.Channel\"]}}",
+        "channelConfig": "{\"app_id\": \"5L6uffbN5W5Hh87VLiEFH6\", \"app_key\": \"whNxbXKByt5yYp274cGgp\", \"app_secret_key\": \"Wu21fxOR3n9uSQ52sy7GG3\", \"attribute_paths\": [\"user.tag_jygbq\",\"store.store_city\"] }"
+    },
+    {
+        "pluginId": "segment-push-plugin-demo",
+        "channelName": "zhilian-poc-plugin",
+        "channelDisplayName": "智联招聘推送",
+        "frontConfig": "{\"front_end\":{\"entry\":\"/api/v3/horizon/v1/web/segment_notify/resource/zhilian-poc-push/front_end_resource/extension.zhilian_poc_push.js\",\"extensionPointIds\":[\"sdh.pushSetting.Channel\"]}}",
+        "channelConfig": ""
+    }
+]

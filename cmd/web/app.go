@@ -17,11 +17,13 @@ type home struct {
 	projectType string // 项目类型
 	hideSso     bool
 	hideWeb     bool
+	hideSegment bool
 }
 
 func (h *home) Render() app.UI {
 	webView := view.NewWeb()
 	ssoView := view.NewSso()
+	segmentView := view.NewSegment()
 	var selectView view.GenView = webView
 
 	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-local", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "justify-between", "items-center", "flex-col").Body(
@@ -39,7 +41,7 @@ func (h *home) Render() app.UI {
 		).Body(
 			// 项目类型选择（绑定projectType）
 			compose.Select(
-				[]string{"Web", "SSO"},
+				[]string{"Web", "SSO", "分群推送"},
 				h.projectType,
 				true,
 				"请选择项目类型",
@@ -47,16 +49,21 @@ func (h *home) Render() app.UI {
 					h.projectType = v
 					h.hideWeb = v != "Web"
 					h.hideSso = v != "SSO"
+					h.hideSegment = v != "分群推送"
 					if !h.hideWeb {
 						selectView = webView
 					}
 					if !h.hideSso {
 						selectView = ssoView
 					}
+					if !h.hideSegment {
+						selectView = segmentView
+					}
 				},
 			),
 			webView.View().Hidden(h.hideWeb),
 			ssoView.View().Hidden(h.hideSso),
+			segmentView.View().Hidden(h.hideSegment),
 			// 导出按钮（点击时打印所有值）
 			compose.Button("导出", "primary").
 				OnClick(func(ctx app.Context, e app.Event) {
@@ -93,6 +100,7 @@ func App() {
 			projectType: "Web",
 			hideSso:     true,
 			hideWeb:     false,
+			hideSegment: true,
 		}
 	})
 	app.RunWhenOnBrowser()

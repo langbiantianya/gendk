@@ -90,7 +90,7 @@ func (s *Sso) View() app.HTMLDiv {
 
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
-		compose.Input("项目名称", s.projectName, func(v string) {
+		compose.Input("项目名称：dk_sso", s.projectName, func(v string) {
 			s.projectName = v
 		}),
 		// JDK版本单选（绑定jdkVersion）

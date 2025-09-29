@@ -1,0 +1,232 @@
+数值:
+  zh-cn: 数值
+  zh-tw: ''
+  en-us: ''
+字符串:
+  zh-cn: 字符串
+  zh-tw: ''
+  en-us: ''
+集合:
+  zh-cn: 集合
+  zh-tw: ''
+  en-us: ''
+日期时间:
+  zh-cn: 日期时间
+  zh-tw: ''
+  en-us: ''
+布尔:
+  zh-cn: 布尔
+  zh-tw: ''
+  en-us: ''
+对象:
+  zh-cn: 对象
+  zh-tw: ''
+  en-us: ''
+对象数组:
+  zh-cn: 对象数组
+  zh-tw: ''
+  en-us: ''
+近30天有数据上报:
+  zh-cn: 近30天有数据上报
+  zh-tw: ''
+  en-us: ''
+近30天无数据上报:
+  zh-cn: 近30天无数据上报
+  zh-tw: ''
+  en-us: ''
+未填写备注信息:
+  zh-cn: 未填写备注信息
+  zh-tw: ''
+  en-us: ''
+是否有可用数据:
+  zh-cn: 是否有可用数据
+  zh-tw: ''
+  en-us: ''
+请选择:
+  zh-cn: 请选择
+  zh-tw: ''
+  en-us: ''
+事件:
+  zh-cn: 事件
+  zh-tw: ''
+  en-us: ''
+事件(虚拟):
+  zh-cn: 事件(虚拟)
+  zh-tw: ''
+  en-us: ''
+事件属性:
+  zh-cn: 事件属性
+  zh-tw: ''
+  en-us: ''
+事件属性(虚拟):
+  zh-cn: 事件属性(虚拟)
+  zh-tw: ''
+  en-us: ''
+内嵌属性:
+  zh-cn: 内嵌属性
+  zh-tw: ''
+  en-us: ''
+内嵌属性(虚拟):
+  zh-cn: 内嵌属性(虚拟)
+  zh-tw: ''
+  en-us: ''
+属性:
+  zh-cn: 属性
+  zh-tw: ''
+  en-us: ''
+属性(虚拟):
+  zh-cn: 属性(虚拟)
+  zh-tw: ''
+  en-us: ''
+维度字典:
+  zh-cn: 维度字典
+  zh-tw: ''
+  en-us: ''
+明细:
+  zh-cn: 明细
+  zh-tw: ''
+  en-us: ''
+分群:
+  zh-cn: 分群
+  zh-tw: ''
+  en-us: ''
+标签:
+  zh-cn: 标签
+  zh-tw: ''
+  en-us: ''
+创建人:
+  zh-cn: 创建人
+  zh-tw: ''
+  en-us: ''
+创建时间:
+  zh-cn: 创建时间
+  zh-tw: ''
+  en-us: ''
+是:
+  zh-cn: 是
+  zh-tw: ''
+  en-us: ''
+否:
+  zh-cn: 否
+  zh-tw: ''
+  en-us: ''
+全部:
+  zh-cn: 全部
+  zh-tw: ''
+  en-us: ''
+最近可用版本:
+  zh-cn: 最近可用版本
+  zh-tw: ''
+  en-us: ''
+最新版本基准时间:
+  zh-cn: 最新版本基准时间
+  zh-tw: ''
+  en-us: ''
+计算完成时间:
+  zh-cn: 计算完成时间
+  zh-tw: ''
+  en-us: ''
+所属实体:
+  zh-cn: 所属实体
+  zh-tw: ''
+  en-us: ''
+暂不支持使用对象数组类型属性:
+  zh-cn: 暂不支持使用对象数组类型属性
+  zh-tw: ''
+  en-us: ''
+AppId:
+  zh-cn: AppId
+  zh-tw: ''
+  en-us: ''
+请输入:
+  zh-cn: 请输入
+  zh-tw: ''
+  en-us: ''
+AppKey:
+  zh-cn: AppKey
+  zh-tw: ''
+  en-us: ''
+MasterSecret:
+  zh-cn: MasterSecret
+  zh-tw: ''
+  en-us: ''
+默认推送内容:
+  zh-cn: 默认推送内容
+  zh-tw: ''
+  en-us: ''
+推送内容:
+  zh-cn: 推送内容
+  zh-tw: ''
+  en-us: ''
+AppSecretKey:
+  zh-cn: AppSecretKey
+  zh-tw: ''
+  en-us: ''
+请选择实体:
+  zh-cn: 请选择实体
+  zh-tw: ''
+  en-us: ''
+该实体已添加:
+  zh-cn: 该实体已添加
+  zh-tw: ''
+  en-us: ''
+'{cname}/{name} {errorType}':
+  zh-cn: '{cname}/{name} {errorType}'
+  zh-tw: ''
+  en-us: ''
+请选择属性:
+  zh-cn: 请选择属性
+  zh-tw: ''
+  en-us: ''
+删除:
+  zh-cn: 删除
+  zh-tw: ''
+  en-us: ''
+添加推送内容:
+  zh-cn: 添加推送内容
+  zh-tw: ''
+  en-us: ''
+无法解析:
+  zh-cn: 无法解析
+  zh-tw: ''
+  en-us: ''
+已被禁用，请联系管理员:
+  zh-cn: 已被禁用，请联系管理员
+  zh-tw: ''
+  en-us: ''
+已被删除，请联系管理员:
+  zh-cn: 已被删除，请联系管理员
+  zh-tw: ''
+  en-us: ''
+已被隐藏，如果更改为其他属性，将无法再次选择:
+  zh-cn: 已被隐藏，如果更改为其他属性，将无法再次选择
+  zh-tw: ''
+  en-us: ''
+无权限:
+  zh-cn: 无权限
+  zh-tw: ''
+  en-us: ''
+无可用数据，请联系管理员:
+  zh-cn: 无可用数据，请联系管理员
+  zh-tw: ''
+  en-us: ''
+已禁止分组与筛选:
+  zh-cn: 已禁止分组与筛选
+  zh-tw: ''
+  en-us: ''
+已脱敏显示:
+  zh-cn: 已脱敏显示
+  zh-tw: ''
+  en-us: ''
+已被移入回收站，请联系管理员:
+  zh-cn: 已被移入回收站，请联系管理员
+  zh-tw: ''
+  en-us: ''
+数据类型发生变化，请检查选项设置:
+  zh-cn: 数据类型发生变化，请检查选项设置
+  zh-tw: ''
+  en-us: ''
+已被彻底删除，请联系管理员:
+  zh-cn: 已被彻底删除，请联系管理员
+  zh-tw: ''
+  en-us: ''

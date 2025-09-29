@@ -1,0 +1,37 @@
+.container {
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: 0 !important;
+  height: 88px;
+  padding-right: 0;
+  padding-left: 0;
+  background: #fff;
+  box-shadow: 0 2px 4px 0 rgba(175, 186, 200, 0.17);
+}
+
+.menu {
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+
+  :global {
+    .ant-menu-item-selected {
+      color: #475669;
+      background-color: #fff !important;
+    }
+  }
+}
+
+.debug {
+  position: fixed;
+  top: 0;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+  height: 54px;
+  text-align: right;
+}
