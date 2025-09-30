@@ -109,6 +109,7 @@ func App() {
 	if build == "" {
 		http.Handle("/", &app.Handler{
 			Icon: app.Icon{
+				SVG:     "/web/logo.gif",
 				Default: "/web/logo.gif", // Specify default favicon.
 			},
 			Name:        "定开项目生成器",
@@ -122,6 +123,7 @@ func App() {
 	} else {
 		err := app.GenerateStaticWebsite(".", &app.Handler{
 			Icon: app.Icon{
+				SVG:     "/web/logo.gif",
 				Default: "/web/logo.gif", // Specify default favicon.
 			},
 			Name:        "定开项目生成器",
