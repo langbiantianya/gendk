@@ -27,6 +27,36 @@ func (h *home) Render() app.UI {
 	var selectView view.GenView = webView
 
 	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-fixed", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "items-center", "flex-col").Body(
+		app.Script().Text(`
+			const targetDiv = document
+  .getElementsByTagName("body")[0]
+  .getElementsByTagName("div")[0]
+
+const bgs = ["bg-[url(/web/683017.jpg)]", "bg-[url(/web/689357.jpg)]"]
+let bgIndex = 0
+function changeBgTask() {
+  console.log("定时任务执行了:", new Date().toLocaleTimeString())
+  // 这里可以放入你需要定期执行的代码
+  if (targetDiv) {
+    if (bgIndex + 1 < bgs.length) {
+      bgIndex += 1
+    } else {
+      bgIndex = 0
+    }
+    // 获取所有类名并转换为数组
+    const classes = Array.from(targetDiv.classList)
+    // 筛选出所有以"bg-[url("开头的类并删除
+    classes.forEach((className) => {
+      if (className.startsWith("bg-[url(")) {
+        targetDiv.classList.remove(className)
+      }
+    })
+    targetDiv.classList.add(bgs[bgIndex])
+  }
+}
+
+const intervalId = setInterval(changeBgTask, 30 * 1000)
+			`),
 		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mb-4", "px-2", "leading-12", "h-12", "flex", "justify-between", "items-center").Body(
 			app.Span().Style("line-height", "3rem").Class(
 				"text-2xl", "font-bold", "text-gray-800", "h-12", "inline",
@@ -38,7 +68,7 @@ func (h *home) Render() app.UI {
 		),
 		app.Div().Class(
 			"p-6", "backdrop-blur-md", "rounded-sm", "shadow-md", "flex", "flex-col", "bg-white/30", "mb-12",
-		).Style("max-width", "36rem").Style("min-width", "28rem").Body(
+		).Style("max-width", "36rem").Style("min-width", "23.5rem").Body(
 			// 项目类型选择（绑定projectType）
 			compose.Select(
 				"请选择项目类型",
@@ -109,6 +139,7 @@ func App() {
 	if build == "" {
 		http.Handle("/", &app.Handler{
 			Icon: app.Icon{
+				SVG:     "/web/logo.gif",
 				Default: "/web/logo.gif", // Specify default favicon.
 			},
 			Name:        "定开项目生成器",
@@ -122,6 +153,7 @@ func App() {
 	} else {
 		err := app.GenerateStaticWebsite(".", &app.Handler{
 			Icon: app.Icon{
+				SVG:     "/web/logo.gif",
 				Default: "/web/logo.gif", // Specify default favicon.
 			},
 			Name:        "定开项目生成器",
