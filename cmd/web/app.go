@@ -30,7 +30,7 @@ func (h *home) Render() app.UI {
 		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mb-4", "px-2", "leading-12", "h-12", "flex", "justify-between", "items-center").Body(
 			app.Span().Style("line-height", "3rem").Class(
 				"text-2xl", "font-bold", "text-gray-800", "h-12", "inline",
-			).Text("定开项目生成器"),
+			).Text("定开应用脚手架"),
 			app.Span().Style("line-height", "3rem").Class().Body(
 				app.A().Class().Href("https://github.com/langbiantianya/gendk/issues").Body(app.Img().Src("/web/issues.svg").Alt("issues").Class("h-8", "inline")),
 				app.A().Class().Href("https://github.com/langbiantianya/gendk").Body(app.Img().Src("/web/github.svg").Alt("github").Class("h-8", "inline")),

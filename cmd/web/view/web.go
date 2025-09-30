@@ -17,6 +17,7 @@ type Web struct {
 	buildTool            string   // 构建工具
 	extraLibs            []string // 额外依赖
 	enableNginx          string   //是否启用nginx
+	language             string
 }
 
 func NewWeb() GenView {
@@ -28,6 +29,7 @@ func NewWeb() GenView {
 		hideSelectSpringBoot: true,
 		buildTool:            "Gradle",
 		enableNginx:          "否",
+		language:             "Java",
 	}
 }
 
@@ -60,6 +62,16 @@ func (w *Web) View() app.HTMLDiv {
 			w.moduleName = v
 			app.Log(w.moduleName)
 		}),
+		// 语言选择
+		compose.Select(
+			[]string{"Java", "Kotlin"},
+			w.jdkVersion,
+			true,
+			"请选择开发语言",
+			func(v string) {
+				w.language = v
+			},
+		),
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
 			[]string{"JDK 1.8", "JDK 17"},
@@ -139,7 +151,7 @@ func (w *Web) GenZip() ([]byte, string, error) {
 	}
 
 	libStr := template.GenGradleLibStr(w.jdkVersion, w.extraLibs)
-	data := template.NewWebTemplateData(w.springBootVersion, libStr, w.projectName, w.moduleName, w.jdkVersion, w.enableNginx == "是")
+	data := template.NewWebTemplateData(w.springBootVersion, libStr, w.projectName, w.moduleName, w.jdkVersion, w.enableNginx == "是", w.language)
 	bytes, err := data.GenZip()
 	return bytes, w.projectName + ".zip", err
 }

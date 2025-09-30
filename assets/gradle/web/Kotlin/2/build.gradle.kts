@@ -1,9 +1,8 @@
-
 plugins {
-    id("org.springframework.boot").version("3.5.0")
-    id("io.spring.dependency-management").version("1.1.7")
-    id("java")
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.20"
+    kotlin("plugin.spring") version "2.2.20"
+    id("org.springframework.boot") version "2.7.18"
+    id("io.spring.dependency-management") version "1.1.7"
 }
 
 group = "com.sensorsdata"
@@ -17,15 +16,27 @@ java {
     sourceCompatibility = JavaVersion.{{.JdkVersion}}
 }
 
+kotlin {
+    jvmToolchain({{.JdkVersionNumber}})
+}
+
 dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.38")
-    annotationProcessor("org.projectlombok:lombok:1.18.38")
 {{.Libs}}
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-starter-actuator")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
 }
 
 tasks.withType<Test> {
@@ -93,8 +104,8 @@ tasks.getByName<Jar>("jar") {
     manifest {
         attributes(
             "Manifest-Version" to "1.0",
-            "Main-Class" to "com.sensorsdata.Main",
-            "Spring-Boot-Version" to "3.5.0",
+            "Main-Class" to "com.sensorsdata.ApplicationKt",
+            "Spring-Boot-Version" to "2.7.18",
             "Class-Path" to configurations.runtimeClasspath.get()
                 .filter { it.name.endsWith(".jar") }
                 .map { "lib/${it.name}" }
@@ -116,4 +127,3 @@ tasks.getByName<Jar>("jar") {
     )
 
 }
-
