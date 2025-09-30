@@ -18,6 +18,7 @@ type WebTemplateData struct {
 	JdkVersion        string
 	JdkVersionNumber  int
 	EnableNginx       bool
+	Language          string
 }
 
 func NewWebTemplateData(
@@ -26,7 +27,8 @@ func NewWebTemplateData(
 	projectName string,
 	moduleName string,
 	jdkVersion string,
-	enableNginx bool) WebTemplateData {
+	enableNginx bool,
+	language string) WebTemplateData {
 	var JdkVersionNumber int
 	switch jdkVersion {
 	case "JDK 1.8":
@@ -48,13 +50,14 @@ func NewWebTemplateData(
 		jdkVersion,
 		JdkVersionNumber,
 		enableNginx,
+		language,
 	}
 
 }
 
 func (data WebTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/README.md", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/README.md", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -75,7 +78,7 @@ func (data WebTemplateData) GenReadme() (string, error) {
 
 func (data WebTemplateData) GenBuildKts() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/build.gradle.kts", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/build.gradle.kts", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -96,7 +99,7 @@ func (data WebTemplateData) GenBuildKts() (string, error) {
 
 func (data WebTemplateData) GenSettingsKts() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/settings.gradle.kts", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/settings.gradle.kts", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -116,7 +119,7 @@ func (data WebTemplateData) GenSettingsKts() (string, error) {
 
 func (data WebTemplateData) GenApplication() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/src/main/resources/application.yaml", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/src/main/resources/application.yaml", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -136,7 +139,7 @@ func (data WebTemplateData) GenApplication() (string, error) {
 
 func (data WebTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/moduleName/bin/run.sh", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/dingkai/moduleName/bin/run.sh", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -155,7 +158,7 @@ func (data WebTemplateData) GenRunSh() (string, error) {
 }
 func (data WebTemplateData) GenStartWebSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/moduleName/bin/start_web.sh", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/dingkai/moduleName/bin/start_web.sh", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -174,7 +177,7 @@ func (data WebTemplateData) GenStartWebSh() (string, error) {
 }
 func (data WebTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -194,7 +197,7 @@ func (data WebTemplateData) GenBlueprint() (string, error) {
 
 func (data WebTemplateData) GenNginxBackendJ2() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-api-backend-conf.j2", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-api-backend-conf.j2", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -214,7 +217,7 @@ func (data WebTemplateData) GenNginxBackendJ2() (string, error) {
 
 func (data WebTemplateData) GenNginxJ2() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-nginx-conf.j2", data.SpringBootVersion))
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/web/%s/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName-nginx-conf.j2", data.Language, data.SpringBootVersion))
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -237,14 +240,14 @@ func (data WebTemplateData) GenZip() ([]byte, error) {
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
-	// 遍历assets/gradle/web/2目录下所有文件
-	err := fs.WalkDir(distFS, fmt.Sprintf("assets/gradle/web/%d", data.SpringBootVersion), func(path string, d fs.DirEntry, walkErr error) error {
+	// 遍历assets/gradle/web/%s/2目录下所有文件
+	err := fs.WalkDir(distFS, fmt.Sprintf("assets/gradle/web/%s/%d", data.Language, data.SpringBootVersion), func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
-		// 计算相对路径（去除assets/gradle/web/2前缀）
-		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/gradle/web/%d/", data.SpringBootVersion))
+		// 计算相对路径（去除assets/gradle/web/%s/2前缀）
+		relPath := strings.TrimPrefix(path, fmt.Sprintf("assets/gradle/web/%s/%d/", data.Language, data.SpringBootVersion))
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}

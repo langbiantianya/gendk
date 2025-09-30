@@ -1,0 +1,5 @@
+# TODO 这个文件名得改一下，把 dk_sso_demo 换成你自己的组件名, upstream 名字也改下
+upstream {{.ProjectName}} {
+    {{"{{hosts}}"}}
+    check interval=30000 fall=3 rise=2 timeout=1000 default_down=false type=tcp;
+}

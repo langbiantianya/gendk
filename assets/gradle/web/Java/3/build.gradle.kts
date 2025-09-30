@@ -3,7 +3,7 @@ plugins {
     id("org.springframework.boot").version("3.5.6")
     id("io.spring.dependency-management").version("1.1.7")
     id("java")
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.20"
 }
 
 group = "com.sensorsdata"
@@ -21,11 +21,6 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.38")
     annotationProcessor("org.projectlombok:lombok:1.18.38")
 {{.Libs}}
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("cn.hutool:hutool-all:5.8.40")
-    implementation("org.apache.commons:commons-lang3:3.19.0")
-    implementation("commons-codec:commons-codec:1.19.0")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-web")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
