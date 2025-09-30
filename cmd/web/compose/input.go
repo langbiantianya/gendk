@@ -6,12 +6,12 @@ import "github.com/maxence-charriere/go-app/v10/pkg/app"
 // placeholder: 提示文本
 // value: 当前输入值（双向绑定）
 // onChange: 值变化时的回调（参数为新值）
-func Input(placeholder, value string, onChange func(string)) app.HTMLDiv {
+func Input(label string, placeholder, value string, onChange func(string)) app.HTMLDiv {
 	return app.Div().Body(
 		app.Div().
 			Class(
 				"text-sm", "font-medium", "text-gray-700", "mb-3", "w-full", // 标签：左间距+小字体+深灰色（semi标签样式）
-			).Text(placeholder),
+			).Text(label),
 		app.Input().
 			Type("text").
 			Placeholder(placeholder).

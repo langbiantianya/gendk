@@ -32,6 +32,7 @@ func NewSso() GenView {
 }
 func (s *Sso) View() app.HTMLDiv {
 	springBootVersionSelect := compose.Select(
+		"Spring Boot版本",
 		[]string{"Spring Boot 2", "Spring Boot 3"},
 		func() string {
 			return fmt.Sprintf("Spring Boot %d", s.springBootVersion)
@@ -49,6 +50,7 @@ func (s *Sso) View() app.HTMLDiv {
 		},
 	).Style("display", "none")
 	jdkVersionSelect := compose.Select(
+		"Java版本",
 		[]string{"JDK 1.8", "JDK 17"},
 		s.jdkVersion,
 		true,
@@ -59,6 +61,7 @@ func (s *Sso) View() app.HTMLDiv {
 		},
 	)
 	buildTools := compose.Select(
+		"构建工具",
 		[]string{"Gradle"},
 		s.buildTool,
 		true,
@@ -67,30 +70,30 @@ func (s *Sso) View() app.HTMLDiv {
 			s.buildTool = v
 		},
 	)
-	entityIDInput := compose.Input("请输入entityID", s.entityID, func(v string) {
+	entityIDInput := compose.Input("entityID", "请输入entityID: 域名", s.entityID, func(v string) {
 		s.entityID = v
 	})
-	endpointInput := compose.Input("请输入endpoint", s.endpoint, func(v string) {
+	endpointInput := compose.Input("endpoint", "请输入endpoint: https://域名/login/saml2/sso/xx", s.endpoint, func(v string) {
 		s.endpoint = v
 	})
-	logoutEndpointInput := compose.Input("请输入logoutEndpoint", s.logoutEndpoint, func(v string) {
+	logoutEndpointInput := compose.Input("logoutEndpoint", "请输入logoutEndpoint: https://域名/logout/saml2/slo", s.logoutEndpoint, func(v string) {
 		s.logoutEndpoint = v
 	})
-	idpxmlInput := compose.FileInput("选择IDP文件", func(v string) {
+	idpxmlInput := compose.FileInput("标识提供者 (IdP)", "选择IDP xml文件", func(v string) {
 		s.idpXml = v
 		app.Log(v)
 	}, "text/xml")
-	pemCAInput := compose.FileInput("选择pem CA证书文件", func(v string) {
+	pemCAInput := compose.FileInput("证书", "选择pem CA证书文件", func(v string) {
 		s.pemCA = v
 		app.Log(v)
 	}, "application/x-x509-ca-cert")
-	redirectInput := compose.Input("请输入重定向接口uri", s.logoutEndpoint, func(v string) {
+	redirectInput := compose.Input("重定向地址", "请输入重定向接口uri: /redirect", s.redirect, func(v string) {
 		s.redirect = v
 	}).Style("display", "none")
 
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
-		compose.Input("项目名称：dk_sso", s.projectName, func(v string) {
+		compose.Input("项目名称", "项目名称：dk_sso", s.projectName, func(v string) {
 			s.projectName = v
 		}),
 		// JDK版本单选（绑定jdkVersion）
@@ -101,10 +104,11 @@ func (s *Sso) View() app.HTMLDiv {
 		buildTools,
 		// 单点登入协议类型选择（绑定ssoProtocol）
 		compose.Select(
+			"单点登入协议",
 			[]string{"SAML", "token重定向"},
 			s.ssoProtocol,
 			true,
-			"请选择单点登入协议类型",
+			"请选择单点登入协议",
 			func(v string) {
 				switch v {
 				case "SAML":

@@ -10,7 +10,7 @@ import (
 // required: 是否必选
 // placeholder: 占位提示
 // onChange: 值变化时的回调（参数为新值）
-func Select(options []string, value string, required bool, placeholder string, onChange func(string)) app.HTMLDiv {
+func Select(label string, options []string, value string, required bool, placeholder string, onChange func(string)) app.HTMLDiv {
 	var optionsSlice []app.UI
 
 	// 占位符
@@ -26,11 +26,12 @@ func Select(options []string, value string, required bool, placeholder string, o
 			app.Option().Value(val).Text(val).Selected(val == value),
 		)
 	}
+
 	return app.Div().Body(
 		app.Div().
 			Class(
 				"text-sm", "font-medium", "text-gray-700", "mb-3", "w-full", // 标签：左间距+小字体+深灰色（semi标签样式）
-			).Text(placeholder),
+			).Text(label),
 		app.Select().
 			Class(
 				"w-full", "px-3", "py-2", "border", "border-gray-300", "rounded-md", "text-sm",

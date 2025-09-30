@@ -6,7 +6,7 @@ import "github.com/maxence-charriere/go-app/v10/pkg/app"
 // placeholder: 提示文本
 // value: 当前输入值（双向绑定）
 // onChange: 值变化时的回调（参数为新值）
-func FileInput(label string, onChange func(string), format string) app.HTMLDiv {
+func FileInput(label string, placeholder string, onChange func(string), format string) app.HTMLDiv {
 	return app.Div().Class(
 		"items-center", "mb-3", // 容器：弹性布局+垂直居中+底部间距
 	).Body(
@@ -17,6 +17,7 @@ func FileInput(label string, onChange func(string), format string) app.HTMLDiv {
 			Text(label),
 		app.Input().
 			Type("file").
+			Placeholder(placeholder).
 			Accept(format).
 			Class(
 				"w-full", "px-3", "py-2", "border", "border-gray-300", "rounded-md", "text-sm",

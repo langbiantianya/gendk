@@ -41,6 +41,7 @@ func (h *home) Render() app.UI {
 		).Style("max-width", "36rem").Style("min-width", "28rem").Body(
 			// 项目类型选择（绑定projectType）
 			compose.Select(
+				"请选择项目类型",
 				[]string{"Web", "SSO", "分群推送"},
 				h.projectType,
 				true,
@@ -60,7 +61,7 @@ func (h *home) Render() app.UI {
 						selectView = segmentView
 					}
 				},
-			),
+			).Class("mb-4"),
 			webView.View().Hidden(h.hideWeb),
 			ssoView.View().Hidden(h.hideSso),
 			segmentView.View().Hidden(h.hideSegment),

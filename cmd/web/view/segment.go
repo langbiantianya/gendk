@@ -37,25 +37,37 @@ func NewSegment() GenView {
 }
 
 func (s *Segment) View() app.HTMLDiv {
-	projectInputFiled := compose.Input("项目名称: segment-xxxxx-plugin", s.projectName, func(v string) {
-		s.projectName = v
-	})
-	dkProjectInputFiled := compose.Input("项目名称: dk_segment-demo-manager", s.projectName, func(v string) {
-		s.projectName = v
-	}).Style("display", "none")
-	pluginCNameInputFiled := compose.Input("插件中文名称: xx分群推送", s.pluginCName, func(v string) {
-		s.pluginCName = v
-	})
-	pluginNameInputFiled := compose.Input("插件名称: segment-plugin-xxx", s.pluginName, func(v string) {
-		s.pluginName = v
-	})
-	webServerUrlInputFiled := compose.Input("web服务地址: http://localhost:8107/api/xxx/acceptMessage", s.webServerUrl, func(v string) {
-		s.webServerUrl = v
-	})
-	moduleNameInputFiled := compose.Input("模块名称：demo", s.moduleName, func(v string) {
-		s.moduleName = v
-	}).Style("display", "none")
+	projectInputFiled := compose.Input("项目名称",
+		"项目名称: segment-xxxxx-plugin",
+		s.projectName, func(v string) {
+			s.projectName = v
+		})
+	dkProjectInputFiled := compose.Input("项目名称",
+		"项目名称: dk_segment-demo-manager",
+		s.projectName, func(v string) {
+			s.projectName = v
+		}).Style("display", "none")
+	pluginCNameInputFiled := compose.Input("插件中文名",
+		"插件中文名称: xx分群推送",
+		s.pluginCName, func(v string) {
+			s.pluginCName = v
+		})
+	pluginNameInputFiled := compose.Input("插件名称",
+		"插件名称: segment-plugin-xxx",
+		s.pluginName, func(v string) {
+			s.pluginName = v
+		})
+	webServerUrlInputFiled := compose.Input("web服务地址",
+		"web服务地址: http://localhost:8107/api/xxx/acceptMessage", s.webServerUrl, func(v string) {
+			s.webServerUrl = v
+		})
+	moduleNameInputFiled := compose.Input("模块名称",
+		"模块名称：demo",
+		s.moduleName, func(v string) {
+			s.moduleName = v
+		}).Style("display", "none")
 	springBootVersionSelect := compose.Select(
+		"Spring Boot版本",
 		[]string{"Spring Boot 2", "Spring Boot 3"},
 		func() string {
 			return fmt.Sprintf("Spring Boot %d", s.springBootVersion)
@@ -74,6 +86,7 @@ func (s *Segment) View() app.HTMLDiv {
 	).Style("display", "none")
 
 	jdkVersionSelect := compose.Select(
+		"Java版本",
 		[]string{"JDK 1.8", "JDK 17"},
 		s.jdkVersion,
 		true,
@@ -92,6 +105,7 @@ func (s *Segment) View() app.HTMLDiv {
 	).Style("display", "none")
 
 	buildToolSelect := compose.Select(
+		"构建工具",
 		[]string{"Gradle"},
 		s.buildTool,
 		true,
@@ -124,6 +138,7 @@ func (s *Segment) View() app.HTMLDiv {
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 生成项目选择 插件 or 实际推送服务
 		compose.Select(
+			"项目类型",
 			[]string{"插件", "推送服务"},
 			s.segmentProtocol,
 			true,
