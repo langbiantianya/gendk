@@ -19,6 +19,15 @@ deliver/deliver-package.yml@general-utilities/share-cicd
 
 product/deliver.yml@general-utilities/share-cicd
 
+## 关于java 17
+
+sa版本是新版本且对于某些有漏洞扫描的客户无法通过升级依赖修复漏洞，或者单纯不想用java 1.8都可以使用。
+
+### 查找jdk17并使用
+
+1. 使用`which java`查看Java运行时的目录，再同级目录中有个java17的目录。
+2. 修改`dingkai/dk_segment_push_shulex_manager/bin/run.sh`在`source /home/sa_cluster/.bash_profile`之后添加上一步获取到的路径设为`JAVA_HOME`并加上`export PATH=$JAVA_HOME/bin:$PATH`
+
 ## 如何编译
 
 ### 必须的依
