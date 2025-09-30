@@ -26,7 +26,7 @@ func (h *home) Render() app.UI {
 	segmentView := view.NewSegment()
 	var selectView view.GenView = webView
 
-	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-fixed", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "justify-between", "items-center", "flex-col").Body(
+	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-fixed", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "items-center", "flex-col").Body(
 		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mb-4", "px-2", "leading-12", "h-12", "flex", "justify-between", "items-center").Body(
 			app.Span().Style("line-height", "3rem").Class(
 				"text-2xl", "font-bold", "text-gray-800", "h-12", "inline",
@@ -37,10 +37,11 @@ func (h *home) Render() app.UI {
 			),
 		),
 		app.Div().Class(
-			"max-w-md", "mx-auto", "p-6", "backdrop-blur-md", "rounded-sm", "shadow-md", "flex", "flex-col", "gap-y-4", "bg-white/30",
-		).Body(
+			"p-6", "backdrop-blur-md", "rounded-sm", "shadow-md", "flex", "flex-col", "bg-white/30", "mb-12",
+		).Style("max-width", "36rem").Style("min-width", "28rem").Body(
 			// 项目类型选择（绑定projectType）
 			compose.Select(
+				"请选择项目类型",
 				[]string{"Web", "SSO", "分群推送"},
 				h.projectType,
 				true,
@@ -60,7 +61,7 @@ func (h *home) Render() app.UI {
 						selectView = segmentView
 					}
 				},
-			),
+			).Class("mb-4"),
 			webView.View().Hidden(h.hideWeb),
 			ssoView.View().Hidden(h.hideSso),
 			segmentView.View().Hidden(h.hideSegment),
@@ -76,7 +77,7 @@ func (h *home) Render() app.UI {
 					template.SaveZipDataLocally(ctx, e, zipData, fileName)
 				}),
 		),
-		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mt-4", "px-2").Body(
+		app.Div().Class("w-full", "bg-white/30", "shadow-md", "backdrop-blur-md", "mt-4", "px-2", "fixed", "bottom-0").Body(
 			app.P().Class("text-right", "text-sm/8").ID("hitokoto").Body(
 				app.A().Href("#").ID("hitokoto_text").Text(":D 获取中..."),
 				app.Script().Text(`fetch('https://v1.hitokoto.cn?c=a&c=b&c=c&c=d&c=h&c=i&c=j')

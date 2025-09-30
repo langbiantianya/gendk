@@ -35,6 +35,7 @@ func NewWeb() GenView {
 
 func (w *Web) View() app.HTMLDiv {
 	springBootVersionSelect := compose.Select(
+		"Spring Boot版本",
 		[]string{"Spring Boot 2", "Spring Boot 3"},
 		func() string {
 			return fmt.Sprintf("Spring Boot %d", w.springBootVersion)
@@ -53,17 +54,18 @@ func (w *Web) View() app.HTMLDiv {
 	).Style("display", "none")
 	return app.Div().Class("rounded-lg", "space-y-4").Body(
 		// 项目名称输入框（绑定projectName）
-		compose.Input("项目名称：dk_demo", w.projectName, func(v string) {
+		compose.Input("项目名称", "项目名称：dk_demo", w.projectName, func(v string) {
 			w.projectName = v
 			app.Log(w.projectName)
 		}),
 		// 模块名称输入框（绑定moduleName）
-		compose.Input("模块名称：demo", w.moduleName, func(v string) {
+		compose.Input("模块名称", "模块名称：demo", w.moduleName, func(v string) {
 			w.moduleName = v
 			app.Log(w.moduleName)
 		}),
 		// 语言选择
 		compose.Select(
+			"开发语言",
 			[]string{"Java", "Kotlin"},
 			w.jdkVersion,
 			true,
@@ -74,6 +76,7 @@ func (w *Web) View() app.HTMLDiv {
 		),
 		// JDK版本单选（绑定jdkVersion）
 		compose.Select(
+			"Java版本",
 			[]string{"JDK 1.8", "JDK 17"},
 			w.jdkVersion,
 			true,
@@ -94,6 +97,7 @@ func (w *Web) View() app.HTMLDiv {
 		springBootVersionSelect,
 		// 构建工具单选（绑定buildTool）
 		compose.Select(
+			"构建工具",
 			[]string{"Gradle"},
 			w.buildTool,
 			true,
@@ -104,6 +108,7 @@ func (w *Web) View() app.HTMLDiv {
 		),
 		// 是否启用nginx
 		compose.Select(
+			"nginx渲染模板",
 			[]string{"是", "否"},
 			w.enableNginx,
 			true,
