@@ -83,7 +83,7 @@ func (s *Sso) View() app.HTMLDiv {
 		s.idpXml = v
 		app.Log(v)
 	}, "text/xml")
-	pemCAInput := compose.FileInput("证书", "选择pem CA证书文件", func(v string) {
+	pemCAInput := compose.FileInput("pem 证书", "选择pem CA证书文件", func(v string) {
 		s.pemCA = v
 		app.Log(v)
 	}, "application/x-x509-ca-cert")
@@ -155,8 +155,22 @@ func (s *Sso) GenZip() ([]byte, string, error) {
 
 	switch s.ssoProtocol {
 	case "SAML":
+		if s.entityID == "" {
+			return nil, "", fmt.Errorf("请输入EntityID")
+		} else if s.endpoint == "" {
+			return nil, "", fmt.Errorf("请输入endpoint")
+		} else if s.logoutEndpoint == "" {
+			return nil, "", fmt.Errorf("请输入logoutEndpoint")
+		} else if s.idpXml == "" {
+			return nil, "", fmt.Errorf("请选择idp.xml")
+		} else if s.pemCA == "" {
+			return nil, "", fmt.Errorf("请选择pem证书")
+		}
 		data = template.NewSSOTemplateData(s.springBootVersion, s.projectName, s.jdkVersion, s.idpXml, s.pemCA, s.entityID, s.endpoint, s.logoutEndpoint)
 	case "token重定向":
+		if s.redirect == "" {
+			return nil, "", fmt.Errorf("请输入重定向地址")
+		}
 		data = template.NewSSoNginxTemplateData(s.projectName, s.redirect)
 	}
 

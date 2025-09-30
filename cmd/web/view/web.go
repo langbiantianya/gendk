@@ -149,9 +149,7 @@ func (w *Web) GenZip() ([]byte, string, error) {
 	app.Log(w)
 	if w.projectName == "" {
 		return nil, "", fmt.Errorf("请输入项目名")
-	}
-
-	if w.moduleName == "" {
+	} else if w.moduleName == "" {
 		return nil, "", fmt.Errorf("请输入模块名")
 	}
 

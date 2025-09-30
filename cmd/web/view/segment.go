@@ -215,6 +215,8 @@ func (s *Segment) GenZip() ([]byte, string, error) {
 	case "推送服务":
 		if s.projectName == "" {
 			return nil, "", fmt.Errorf("请输入项目名")
+		} else if s.moduleName == "" {
+			return nil, "", fmt.Errorf("请输入模块名称")
 		}
 		libStr := template.GenGradleLibStr(s.jdkVersion, s.extraLibs)
 		data = template.NewSegmentWebServerTemplateData(
