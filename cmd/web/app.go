@@ -66,7 +66,7 @@ func (h *home) Render() app.UI {
 			ssoView.View().Hidden(h.hideSso),
 			segmentView.View().Hidden(h.hideSegment),
 			// 导出按钮（点击时打印所有值）
-			compose.Button("导出", "primary").
+			compose.Button("导出", "primary").Class("mt-4").
 				OnClick(func(ctx app.Context, e app.Event) {
 					zipData, fileName, err := selectView.GenZip()
 					if err != nil {
