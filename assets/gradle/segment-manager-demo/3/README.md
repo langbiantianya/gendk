@@ -3,19 +3,19 @@
 ### 首次
 
 ```shell
-dingkai install -p {{.ModuleName}} -f {{.ModuleName}}.tar --default
+dingkai install -p {{.ProjectName}} -f {{.ModuleName}}.tar --default
 ```
 
 ### 更新
 
 ```shell
-dingkai install -p {{.ModuleName}} -f {{.ModuleName}}.tar --default --reinstall
+dingkai install -p {{.ProjectName}} -f {{.ModuleName}}.tar --default --reinstall
 ```
-
 
 ## 注册资源树
 
 1. 第一步
+
 ```shell
 curl --location 'http://xxx:8107/api/v2/sbp/resources/register?token=%247f61a95a684725d4f8049b0fcf629706' \
 --header 'Content-Type: application/json' \
