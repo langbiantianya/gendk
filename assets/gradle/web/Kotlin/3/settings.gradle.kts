@@ -1,4 +1,4 @@
-rootProject.name = "{{.ProjectName}}"
+rootProject.name = "{{.ModuleName}}"
 
 pluginManagement {
     repositories {
