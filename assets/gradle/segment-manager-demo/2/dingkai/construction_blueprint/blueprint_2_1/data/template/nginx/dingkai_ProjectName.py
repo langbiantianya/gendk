@@ -19,9 +19,7 @@ def read_yaml(file_path, default=None):
 
 def render_params():
     """函数名是写死的"""
-
-    program_name = os.path.split(PROGRAM_ROOT_PATH)[1]
-    module_name = program_name
+    module_name = {{.ModuleName}}
     # 获取所有nginx ip地址列表
     nginx_ips = utils.sa_utils.get_hosts_by_role('sp', 'nginx', 'nginx')
     application_file = os.path.join(PROGRAM_ROOT_PATH, module_name,"resources","application.yaml")

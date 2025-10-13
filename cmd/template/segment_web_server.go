@@ -47,6 +47,28 @@ func NewSegmentWebServerTemplateData(
 		JdkVersionNumber,
 	}
 }
+
+func (data SegmentWebServerTemplateData) GenNginxConfigPy() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/segment-manager-demo/%d/dingkai/construction_blueprint/blueprint_2_1/data/template/nginx/dingkai_ProjectName.py", data.SpringBootVersion))
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("dingkai_ProjectName.py").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+
+}
+
 func (data SegmentWebServerTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
 	buildBytes, err := distFS.ReadFile(fmt.Sprintf("assets/gradle/segment-manager-demo/%d/README.md", data.SpringBootVersion))
@@ -312,6 +334,12 @@ func (data SegmentWebServerTemplateData) GenZip() ([]byte, error) {
 				fileData = []byte(strData)
 			} else if strings.Contains(relPath, "dingkai_ProjectName-nginx-conf.j2") {
 				strData, err := data.GenNginxJ2()
+				if err != nil {
+					return err
+				}
+				fileData = []byte(strData)
+			} else if strings.Contains(relPath, "dingkai_ProjectName.py") {
+				strData, err := data.GenNginxConfigPy()
 				if err != nil {
 					return err
 				}
