@@ -1,0 +1,35 @@
+#如果有多套环境，主机名完全不一样，可以用下面方式区分环境
+#host_namets:
+#  type: default
+#  #port: 9701
+#  port_conf: amer_data_import/resources/application.yml
+#  host_name:
+#    test:
+#    pro:
+
+#liveness_method:
+#  type: liveness
+#  #port: 9701
+#  port_conf: amer_data_import/resources/application.yml
+#  process_keyword: 'dk_service_amer_data_import'
+#  get_path: '/test/checkServiceStatus'
+
+#使用正则的方式选择部署的节点
+#hosts:
+#  # 正则全匹配
+#  type: re
+#  port: 8112
+#  host_name: ^hybrid.*
+#
+#使用正则的方式，根据环境选择部署及节点
+#hosts:
+#  type: re
+#  port: 8112
+#  host_name:
+#    pro: ^meta.*
+#    test: ^hybrid.*
+#
+#使用执行命令的节点，作为服务所在节点
+hosts:
+  type: local
+  port: 9730
