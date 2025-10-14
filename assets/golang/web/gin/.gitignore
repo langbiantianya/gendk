@@ -72,7 +72,6 @@ tramp/
 .c9/
 *.launch
 .settings/
-bin/
 
 # NetBeans
 nbproject/
