@@ -1,0 +1,92 @@
+# Go 编译产物
+# 可执行文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# 中间编译文件
+*.o
+*.a
+*.test
+
+# Go 模块缓存
+go.sum
+/vendor/
+/Godeps/
+/Gopkg.lock
+/.gogradle/
+/.gradle/
+
+# 临时文件和日志
+*.log
+*.tmp
+*.bak
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# 编辑器/IDE 配置
+# VS Code
+*.code-workspace
+.history/
+
+# JetBrains 系列 (IntelliJ, GoLand, WebStorm 等)
+.idea/
+*.iml
+*.iws
+*.ipr
+/out/
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+Session.vim
+
+# Emacs
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list/
+tramp/
+\#*#
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+.sublime/
+
+# Atom
+.atom/
+*.apm
+.pulsar/
+
+# Eclipse
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# NetBeans
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+
+# 构建输出目录
+/build/
+/dist/
+/out/
+
+# 操作系统相关
+Thumbs.db
+ehthumbs.db

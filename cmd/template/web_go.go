@@ -8,25 +8,22 @@ import (
 	"text/template"
 )
 
-type SegmentPluginTemplateData struct {
-	ProjectName  string
-	PluginName   string
-	PluginCName  string
-	WebServerUrl string
+type WebGoTemplateData struct {
+	ProjectName string
+	ModuleName  string
 }
 
-func NewSegmentPluginTemplateData(projectName string, pluginName string, pluginCName string, webServerUrl string) SegmentPluginTemplateData {
-	return SegmentPluginTemplateData{
+func NewWebGoTemplateData(projectName string,
+	moduleName string) WebGoTemplateData {
+	return WebGoTemplateData{
 		projectName,
-		pluginCName,
-		pluginName,
-		webServerUrl,
+		moduleName,
 	}
 }
 
-func (data SegmentPluginTemplateData) GenReadme() (string, error) {
+func (data WebGoTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/README.md")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/README.md")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -45,15 +42,15 @@ func (data SegmentPluginTemplateData) GenReadme() (string, error) {
 
 }
 
-func (data SegmentPluginTemplateData) GenPom() (string, error) {
+func (data WebGoTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/pom.xml")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/moduleName/bin/run.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("pom").Parse(string(buildBytes))
+	tpl, err := template.New("run").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -65,15 +62,15 @@ func (data SegmentPluginTemplateData) GenPom() (string, error) {
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
-func (data SegmentPluginTemplateData) GenSegmentPluginDemoPlugin() (string, error) {
+func (data WebGoTemplateData) GenStartWebSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/src/main/java/com/sensorsdata/horizon/segment/plugin/demo/SegmentPluginDemoPlugin.java")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/moduleName/bin/start_web.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("SegmentPluginDemoPlugin").Parse(string(buildBytes))
+	tpl, err := template.New("run").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -85,15 +82,15 @@ func (data SegmentPluginTemplateData) GenSegmentPluginDemoPlugin() (string, erro
 	return result.String(), nil // 返回生成后的内容和错误
 }
 
-func (data SegmentPluginTemplateData) GenSensorsdataPlugin() (string, error) {
+func (data WebGoTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/src/main/resources/sensorsdata-plugin.yml")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("SegmentPluginDemoPlugin").Parse(string(buildBytes))
+	tpl, err := template.New("dk_product_component").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -104,15 +101,15 @@ func (data SegmentPluginTemplateData) GenSensorsdataPlugin() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
-func (data SegmentPluginTemplateData) GenIndex() (string, error) {
+func (data WebGoTemplateData) GenGoMod() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/front-end/src/index.ts")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/gosss.mod")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("index").Parse(string(buildBytes))
+	tpl, err := template.New("go.mod").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -123,16 +120,15 @@ func (data SegmentPluginTemplateData) GenIndex() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
-
-func (data SegmentPluginTemplateData) GenPackage() (string, error) {
+func (data WebGoTemplateData) GenMain() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/maven/segment-plugin-demo/front-end/package.json")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/main.go")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
 
 	// 解析模板内容
-	tpl, err := template.New("package").Parse(string(buildBytes))
+	tpl, err := template.New("main.go").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -143,70 +139,88 @@ func (data SegmentPluginTemplateData) GenPackage() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
-
-func (data SegmentPluginTemplateData) GenZip() ([]byte, error) {
+func (data WebGoTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
-	err := fs.WalkDir(distFS, "assets/maven/segment-plugin-demo", func(path string, d fs.DirEntry, walkErr error) error {
+	// 遍历assets/gradle/web/%s/2目录下所有文件
+	err := fs.WalkDir(distFS, "assets/golang/web", func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
-		// 计算相对路径（去除maven/segment-plugin-demo前缀）
-		relPath := strings.TrimPrefix(path, "assets/maven/segment-plugin-demo/")
+		// 计算相对路径（去除assets/gradle/web/%s/2前缀）
+		relPath := strings.TrimPrefix(path, "assets/golang/web/")
 		if relPath == path { // 处理根目录情况
 			relPath = ""
+		}
+
+		// 替换文件路径
+		if strings.Contains(relPath, "moduleName") {
+			relPath = strings.ReplaceAll(relPath, "moduleName", data.ModuleName)
 		}
 
 		if d.IsDir() {
 			// 跳过根目录的创建（relPath为空时不创建）
 			if relPath != "" {
+				if strings.Contains(relPath, "vscode") {
+					relPath = strings.ReplaceAll(relPath, "vscode", ".vscode")
+				}
 				// 创建目录条目（zip目录需要以/结尾）
 				_, err := zw.Create(relPath + "/")
 				return err
 			}
 			return nil
 		}
+
 		// 判断文件是否需要替换
 		var fileData []byte
-		if strings.Contains(relPath, "README.md") {
+		if strings.Contains(relPath, "run.sh") {
+			strData, err := data.GenRunSh()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "start_web.sh") {
+			strData, err := data.GenStartWebSh()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "dk_product_component.yaml.j2") {
+			strData, err := data.GenBlueprint()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "README.md") {
 			strData, err := data.GenReadme()
 			if err != nil {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "pom.xml") {
-			strData, err := data.GenPom()
+		} else if strings.Contains(relPath, "gosss.mod") {
+			strData, err := data.GenGoMod()
 			if err != nil {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "SegmentPluginDemoPlugin.java") {
-			strData, err := data.GenSegmentPluginDemoPlugin()
+			relPath = strings.ReplaceAll(relPath, "gosss.mod", "go.mod")
+		} else if strings.Contains(relPath, "main.go") {
+			strData, err := data.GenMain()
 			if err != nil {
 				return err
 			}
 			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "sensorsdata-plugin.yml") {
-			strData, err := data.GenSensorsdataPlugin()
+			relPath = strings.ReplaceAll(relPath, "gosss.mod", "go.mod")
+		} else if strings.Contains(relPath, "vscode") {
+			fileDataS, err := distFS.ReadFile(path)
 			if err != nil {
 				return err
 			}
-			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "front-end/src/index.ts") {
-			strData, err := data.GenIndex()
-			if err != nil {
-				return err
-			}
-			fileData = []byte(strData)
-		} else if strings.Contains(relPath, "front-end/package.json") {
-			strData, err := data.GenPackage()
-			if err != nil {
-				return err
-			}
-			fileData = []byte(strData)
+			fileData = fileDataS
+			relPath = strings.ReplaceAll(relPath, "vscode", ".vscode")
 		} else if strings.Contains(relPath, "gitignore") {
 			fileDataS, err := distFS.ReadFile(path)
 			if err != nil {
