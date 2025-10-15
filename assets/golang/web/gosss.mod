@@ -1,5 +1,4 @@
-module go_demo
-
+module {{.ModuleName}}
 go 1.24.0
 
 require (

@@ -23,7 +23,7 @@ func NewWebGoTemplateData(projectName string,
 
 func (data WebGoTemplateData) GenReadme() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/golang/web/gin/README.md")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/README.md")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -44,7 +44,7 @@ func (data WebGoTemplateData) GenReadme() (string, error) {
 
 func (data WebGoTemplateData) GenRunSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/golang/web/gin/dingkai/moduleName/bin/run.sh")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/moduleName/bin/run.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -64,7 +64,7 @@ func (data WebGoTemplateData) GenRunSh() (string, error) {
 
 func (data WebGoTemplateData) GenStartWebSh() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/golang/web/gin/dingkai/moduleName/bin/start_web.sh")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/moduleName/bin/start_web.sh")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -84,7 +84,7 @@ func (data WebGoTemplateData) GenStartWebSh() (string, error) {
 
 func (data WebGoTemplateData) GenBlueprint() (string, error) {
 	// 读取嵌入的模板文件
-	buildBytes, err := distFS.ReadFile("assets/golang/web/gin/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2")
+	buildBytes, err := distFS.ReadFile("assets/golang/web/dingkai/construction_blueprint/blueprint_2_1/declarative_desc/dk_product_component.yaml.j2")
 	if err != nil {
 		return "", err // 改为返回错误而非 panic
 	}
@@ -101,20 +101,57 @@ func (data WebGoTemplateData) GenBlueprint() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
+func (data WebGoTemplateData) GenGoMod() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/gosss.mod")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
 
+	// 解析模板内容
+	tpl, err := template.New("go.mod").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data WebGoTemplateData) GenMain() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/main.go")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("main.go").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
 func (data WebGoTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	defer zw.Close()
 
 	// 遍历assets/gradle/web/%s/2目录下所有文件
-	err := fs.WalkDir(distFS, "assets/golang/web/gin", func(path string, d fs.DirEntry, walkErr error) error {
+	err := fs.WalkDir(distFS, "assets/golang/web", func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 
 		// 计算相对路径（去除assets/gradle/web/%s/2前缀）
-		relPath := strings.TrimPrefix(path, "assets/golang/web/gin/")
+		relPath := strings.TrimPrefix(path, "assets/golang/web/")
 		if relPath == path { // 处理根目录情况
 			relPath = ""
 		}
@@ -127,6 +164,9 @@ func (data WebGoTemplateData) GenZip() ([]byte, error) {
 		if d.IsDir() {
 			// 跳过根目录的创建（relPath为空时不创建）
 			if relPath != "" {
+				if strings.Contains(relPath, "vscode") {
+					relPath = strings.ReplaceAll(relPath, "vscode", ".vscode")
+				}
 				// 创建目录条目（zip目录需要以/结尾）
 				_, err := zw.Create(relPath + "/")
 				return err
@@ -160,6 +200,27 @@ func (data WebGoTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "gosss.mod") {
+			strData, err := data.GenGoMod()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+			relPath = strings.ReplaceAll(relPath, "gosss.mod", "go.mod")
+		} else if strings.Contains(relPath, "main.go") {
+			strData, err := data.GenMain()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+			relPath = strings.ReplaceAll(relPath, "gosss.mod", "go.mod")
+		} else if strings.Contains(relPath, "vscode") {
+			fileDataS, err := distFS.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			fileData = fileDataS
+			relPath = strings.ReplaceAll(relPath, "vscode", ".vscode")
 		} else {
 			// 读取文件内容
 			fileDataS, err := distFS.ReadFile(path)
