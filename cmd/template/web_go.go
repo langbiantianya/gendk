@@ -139,6 +139,67 @@ func (data WebGoTemplateData) GenMain() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
+
+func (data WebGoTemplateData) GenMakeFile() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/Makefile")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("Makefile").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
+func (data WebGoTemplateData) GenRouter() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/router/router.go")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("router.go").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
+func (data WebGoTemplateData) GenBuild() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/scripts/build.sh")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("build.sh").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+
 func (data WebGoTemplateData) GenZip() ([]byte, error) {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
@@ -196,6 +257,24 @@ func (data WebGoTemplateData) GenZip() ([]byte, error) {
 			fileData = []byte(strData)
 		} else if strings.Contains(relPath, "README.md") {
 			strData, err := data.GenReadme()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "Makefile") {
+			strData, err := data.GenMakeFile()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "build.sh") {
+			strData, err := data.GenBuild()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "router.go") {
+			strData, err := data.GenRouter()
 			if err != nil {
 				return err
 			}

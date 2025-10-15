@@ -2,11 +2,11 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 type Config struct {
@@ -25,6 +25,11 @@ func init() {
 		profileActive = "-" + profileActive
 	}
 	profileActive = fmt.Sprintf("application%s.toml", profileActive)
+	defer func() {
+		log.SetOutput(os.Stdout)
+		log.Default().Printf("activity profile : %s", profileActive)
+		log.SetOutput(os.Stderr)
+	}()
 	_, err := toml.DecodeFile(profileActive, &Conf)
 	if err != nil {
 		panic(err)
@@ -39,13 +44,4 @@ func init() {
 	if Conf.Server.Mode == "" {
 		Conf.Server.Mode = gin.DebugMode
 	}
-}
-
-func PrintInfo() {
-	profileActive := os.Getenv("PROFILE_ACTIVE")
-	if profileActive != "" {
-		profileActive = "-" + profileActive
-	}
-	profileActive = fmt.Sprintf("application%s.toml", profileActive)
-	logrus.Infof("activity profile : %s", profileActive)
 }
