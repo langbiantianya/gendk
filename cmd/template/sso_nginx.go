@@ -102,6 +102,13 @@ func (data SSONginxTemplateData) GenZip() ([]byte, error) {
 				return err
 			}
 			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "gitignore") {
+			fileDataS, err := distFS.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			fileData = fileDataS
+			relPath = strings.ReplaceAll(relPath, "gitignore", ".gitignore")
 		} else {
 			// 读取文件内容
 			fileDataS, err := distFS.ReadFile(path)
