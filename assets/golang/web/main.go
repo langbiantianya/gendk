@@ -14,13 +14,13 @@ import (
 )
 
 func main() {
+	lib.Banner(config.Conf)
 	gin.SetMode(config.Conf.Server.Mode)
 	r := gin.Default()
 	r.Use(middleware.Log())
 	r.Use(cors.Default())
 	router.RegisterRouter(r)
 	addr := fmt.Sprintf("%s:%d", config.Conf.Server.Host, config.Conf.Server.Port)
-	lib.Banner(config.Conf)
 	if config.Conf.Server.Mode == gin.ReleaseMode {
 		logrus.Infof("Listening and serving HTTP on %s", addr)
 	}
