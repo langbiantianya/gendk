@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"{{.ModuleName}}/config"
+	"{{.ModuleName}}/lib"
 	"{{.ModuleName}}/middleware"
 	"{{.ModuleName}}/router"
 
@@ -19,6 +20,7 @@ func main() {
 	r.Use(cors.Default())
 	router.RegisterRouter(r)
 	addr := fmt.Sprintf("%s:%d", config.Conf.Server.Host, config.Conf.Server.Port)
+	lib.Banner(config.Conf)
 	if config.Conf.Server.Mode == gin.ReleaseMode {
 		logrus.Infof("Listening and serving HTTP on %s", addr)
 	}
