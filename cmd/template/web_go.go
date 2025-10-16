@@ -159,6 +159,25 @@ func (data WebGoTemplateData) GenMakeFile() (string, error) {
 	}
 	return result.String(), nil // 返回生成后的内容和错误
 }
+func (data WebGoTemplateData) GenApplication() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/application.toml")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("application.toml").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
 
 func (data WebGoTemplateData) GenRouter() (string, error) {
 	// 读取嵌入的模板文件
@@ -169,6 +188,25 @@ func (data WebGoTemplateData) GenRouter() (string, error) {
 
 	// 解析模板内容
 	tpl, err := template.New("router.go").Parse(string(buildBytes))
+	if err != nil {
+		return "", err
+	}
+
+	var result strings.Builder
+	if err := tpl.Execute(&result, data); err != nil {
+		return "", err
+	}
+	return result.String(), nil // 返回生成后的内容和错误
+}
+func (data WebGoTemplateData) GenBanner() (string, error) {
+	// 读取嵌入的模板文件
+	buildBytes, err := distFS.ReadFile("assets/golang/web/lib/banner.go")
+	if err != nil {
+		return "", err // 改为返回错误而非 panic
+	}
+
+	// 解析模板内容
+	tpl, err := template.New("banner.go").Parse(string(buildBytes))
 	if err != nil {
 		return "", err
 	}
@@ -269,6 +307,18 @@ func (data WebGoTemplateData) GenZip() ([]byte, error) {
 			fileData = []byte(strData)
 		} else if strings.Contains(relPath, "build.sh") {
 			strData, err := data.GenBuild()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "banner.go") {
+			strData, err := data.GenBanner()
+			if err != nil {
+				return err
+			}
+			fileData = []byte(strData)
+		} else if strings.Contains(relPath, "application.toml") {
+			strData, err := data.GenApplication()
 			if err != nil {
 				return err
 			}
