@@ -4,5 +4,5 @@ public interface IDataHandler<R,T> {
     /**
      * 转换上报事件
      */
-    R transform(T data);
+    R transform(String eventName,T data);
 }
