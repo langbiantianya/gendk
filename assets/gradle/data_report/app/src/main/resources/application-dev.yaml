@@ -1,0 +1,7 @@
+server:
+  port: 9783
+event:
+  report-type: SDK
+  sdk:
+    server-url: http://10.130.13.197:8106/sa?project=default
+    write-data: false

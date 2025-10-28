@@ -1,0 +1,29 @@
+# Version catalog is a central place for you to declare and version dependencies
+# https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+# https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
+[versions]
+kotlin = "2.2.20"
+springBoot = "2.7.18"
+springDependencyManagement = "1.1.7"
+lombok = "1.18.38"
+sensorsAnalyticsSDK = "3.6.9"
+[libraries]
+# Libraries can be bundled together for easier import
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+sensorsAnalyticsSDK = { module = "com.sensorsdata.analytics.javasdk:SensorsAnalyticsSDK", version.ref = "sensorsAnalyticsSDK" }
+springBootConfigurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "springBoot" }
+springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
+springBootDevtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "springBoot" }
+springBootStarterActuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
+[bundles]
+springBoot = [
+    "springBootConfigurationProcessor",
+    "springBootStarterWeb",
+    "springBootDevtools",
+    "springBootStarterActuator"
+]
+[plugins]
+springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+

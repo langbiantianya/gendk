@@ -14,16 +14,18 @@ import (
 // home 页面组件（支持表单值获取）
 type home struct {
 	app.Compo
-	projectType string // 项目类型
-	hideSso     bool
-	hideWeb     bool
-	hideSegment bool
+	projectType    string // 项目类型
+	hideSso        bool
+	hideWeb        bool
+	hideSegment    bool
+	hideDataReport bool
 }
 
 func (h *home) Render() app.UI {
 	webView := view.NewWeb()
 	ssoView := view.NewSso()
 	segmentView := view.NewSegment()
+	dataReportView := view.NewDataReport()
 	var selectView view.GenView = webView
 
 	return app.Div().Class("bg-[url(/web/683017.jpg)]", "bg-fixed", "w-full", "bg-no-repeat", "min-h-dvh", "bg-center", "bg-cover", "flex", "items-center", "flex-col").Body(
@@ -72,7 +74,7 @@ const intervalId = setInterval(changeBgTask, 30 * 1000)
 			// 项目类型选择（绑定projectType）
 			compose.Select(
 				"请选择项目类型",
-				[]string{"Web", "SSO", "分群推送"},
+				[]string{"Web", "SSO", "分群推送", "数据上报"},
 				h.projectType,
 				true,
 				"请选择项目类型",
@@ -81,6 +83,7 @@ const intervalId = setInterval(changeBgTask, 30 * 1000)
 					h.hideWeb = v != "Web"
 					h.hideSso = v != "SSO"
 					h.hideSegment = v != "分群推送"
+					h.hideDataReport = v != "数据上报"
 					if !h.hideWeb {
 						selectView = webView
 					}
@@ -90,11 +93,15 @@ const intervalId = setInterval(changeBgTask, 30 * 1000)
 					if !h.hideSegment {
 						selectView = segmentView
 					}
+					if !h.hideDataReport {
+						selectView = dataReportView
+					}
 				},
 			).Class("mb-4"),
 			webView.View().Hidden(h.hideWeb),
 			ssoView.View().Hidden(h.hideSso),
 			segmentView.View().Hidden(h.hideSegment),
+			dataReportView.View().Hidden(h.hideDataReport),
 			// 导出按钮（点击时打印所有值）
 			compose.Button("导出", "primary").Class("mt-4").
 				OnClick(func(ctx app.Context, e app.Event) {
