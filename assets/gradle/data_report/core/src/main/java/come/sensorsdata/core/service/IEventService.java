@@ -4,5 +4,5 @@ import org.springframework.scheduling.annotation.Async;
 
 public interface IEventService<T> {
     @Async
-    void track(T data);
+    void track(String eventName,T data);
 }
