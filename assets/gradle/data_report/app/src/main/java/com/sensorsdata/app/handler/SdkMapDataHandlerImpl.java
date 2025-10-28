@@ -11,7 +11,7 @@ import java.util.Map;
 public class SdkMapDataHandlerImpl extends AbsSdkDataHandler<Map<String, Object>> {
     @Override
     @SneakyThrows
-    public EventRecord transform(String eventName, Map<String, Object> data) {
+    public EventRecord transform(String eventName, List<Map<String, Object>> data) {
         return EventRecord.builder().build();
     }
 }
