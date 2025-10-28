@@ -3,10 +3,12 @@ package come.sensorsdata.core.service;
 
 import come.sensorsdata.core.handler.IDataHandler;
 
-public abstract class AbsEventService<R, T> implements IEventService<T> {
-    protected final IDataHandler<R, T> dataHandler;
+import java.util.List;
 
-    protected AbsEventService(IDataHandler<R, T> dataHandler) {
+public abstract class AbsEventService<R, T> implements IEventService<T> {
+    protected final IDataHandler<List<R>, List<T>> dataHandler;
+
+    protected AbsEventService(IDataHandler<List<R>, List<T>> dataHandler) {
         this.dataHandler = dataHandler;
     }
 }
