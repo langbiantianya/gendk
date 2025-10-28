@@ -132,6 +132,7 @@ tasks.getByName<Jar>("jar") {
         "saml/**",
         "**/*.properties",
         "**/*.yml",
+        "**/*.yaml",
         "static/**",
         "templates/**"
     )

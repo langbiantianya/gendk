@@ -121,6 +121,7 @@ tasks.getByName<Jar>("jar") {
     exclude(
         "**/*.properties",
         "**/*.yml",
+        "**/*.yaml",
         "**/*.xml",
         "static/**",
         "templates/**"
