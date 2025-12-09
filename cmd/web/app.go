@@ -135,10 +135,11 @@ const intervalId = setInterval(changeBgTask, 30 * 1000)
 func App() {
 	app.Route("/", func() app.Composer {
 		return &home{
-			projectType: "Web",
-			hideSso:     true,
-			hideWeb:     false,
-			hideSegment: true,
+			projectType:    "Web",
+			hideSso:        true,
+			hideWeb:        false,
+			hideSegment:    true,
+			hideDataReport: true,
 		}
 	})
 	app.RunWhenOnBrowser()
