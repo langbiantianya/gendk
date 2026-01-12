@@ -37,32 +37,10 @@ sa版本是新版本且对于某些有漏洞扫描的客户无法通过升级依
 ### 必须的依
 
 - golang 1.23.5+
-- make
-
-### 可选依赖
-
-仅 docker web 需要
-
-- docker
+- node 22+
 
 ### web
 
-#### powershell
-
 ```shell
-$ENV:BUILD=1
-make
-```
-
-### bash | zsh
-
-```shell
-export BUILD=1
-make
-```
-
-### docker-web
-
-```shell
-docker build -t gendk-web .
+npm run build
 ```
