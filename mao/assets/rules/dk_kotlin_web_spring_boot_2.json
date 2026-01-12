@@ -1,0 +1,36 @@
+{
+    "name": "kotlin spring boot 2",
+    "group": "定开web",
+    "components": [
+        {
+            "label": "Hello Text?",
+            "tips": "你好文字",
+            "type": "text",
+            "key": "HelloText",
+            "validate": {
+                "required": true,
+                "ValidatorExpr": {
+                    "type": "pattern",
+                    "rule": "^[^0-9]*",
+                    "message": "Hello 不可为数字"
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "filePath": "main.go"
+        },
+        {
+            "key": "HelloFile",
+            "type": "file",
+            "filePath": "public/static/HelloFile.docx"
+        }
+    ],
+    "path": [
+        {
+            "source": "go.modd",
+            "target": "go.mod"
+        }
+    ]
+}
