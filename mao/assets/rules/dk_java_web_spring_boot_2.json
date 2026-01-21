@@ -3,18 +3,98 @@
     "group": "定开web",
     "components": [
         {
-            "label": "Hello Text?",
-            "tips": "你好文字",
+            "label": "项目名称",
+            "tips": "dk_demo",
             "type": "text",
-            "key": "HelloText",
+            "key": "ProjectName",
             "validate": {
-                "required": true,
-                "ValidatorExpr": {
-                    "type": "pattern",
-                    "rule": "^[^0-9]*",
-                    "message": "Hello 不可为数字"
-                }
+                "required": true
             }
+        },
+        {
+            "label": "模块名称",
+            "tips": "demo",
+            "type": "text",
+            "key": "ModuleName",
+            "validate": {
+                "required": true
+            }
+        },
+        {
+            "label": "Java 版本",
+            "tips": "Java version",
+            "type": "select",
+            "options": [
+                {
+                    "lable": "JDK 1.8",
+                    "value": "8",
+                    "default": true
+                },
+                {
+                    "lable": "JDK 17",
+                    "value": "17"
+                }
+            ],
+            "key": "JdkVersion",
+            "validate": {
+                "required": true
+            }
+        },
+        {
+            "label": "额外依赖",
+            "tips": "额外依赖",
+            "type": "checkbox",
+            "key": "Libs",
+            "options": [
+                {
+                    "lable": "Hutool All",
+                    "value": "Hutool All"
+                },
+                {
+                    "lable": "Apache Commons IO",
+                    "value": "Apache Commons IO"
+                },
+                {
+                    "lable": "Apache Commons Lang",
+                    "value": "Apache Commons Lang"
+                },
+                {
+                    "lable": "Apache Commons Codec",
+                    "value": "Apache Commons Codec"
+                },
+                {
+                    "lable": "OkHttp",
+                    "value": "OkHttp"
+                },
+                {
+                    "lable": "Spring Boot Starter JDBC",
+                    "value": "Spring Boot Starter JDBC"
+                },
+                {
+                    "lable": "Spring Boot Starter Data JPA",
+                    "value": "Spring Boot Starter Data JPA"
+                },
+                {
+                    "lable": "Hive JDBC",
+                    "value": "Hive JDBC"
+                },
+                {
+                    "lable": "MySQL Connector/J",
+                    "value": "MySQL Connector/J"
+                },
+                {
+                    "lable": "Microsoft JDBC Driver For SQL Server",
+                    "value": "Microsoft JDBC Driver For SQL Server"
+                },
+                {
+                    "lable": "PostgreSQL JDBC Driver",
+                    "value": "PostgreSQL JDBC Driver"
+                },
+                {
+                    "lable": "Oracle JDBC Driver",
+                    "value": "Oracle JDBC Driver"
+                }
+            ]
         }
     ],
     "variable": [
